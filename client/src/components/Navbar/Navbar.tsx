@@ -11,7 +11,7 @@ const Navbar = () => {
   const profilPicture = user?.profile_img;
   return (
     <>
-      <header className="w-full h-[50px] flex items-center justify-between py-10 px-[100px]">
+      <header className="w-full h-[100px] flex items-center justify-between py-5 px-[100px]">
         <div className=""></div>
         <nav className="flex flex-row w-full">
           {access_token ? (
@@ -31,7 +31,17 @@ const Navbar = () => {
                       setShowModal((prev) => !prev);
                     }}
                   />
-                  {showModal ? <MenuModal /> : ""}
+                  {showModal ? (
+                    <>
+                      <MenuModal />
+                      <div
+                        className="w-screen h-screen fixed left-0 top-0 -z-0"
+                        onClick={() => setShowModal(false)}
+                      ></div>
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </li>
               </ul>
             </div>

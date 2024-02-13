@@ -25,6 +25,7 @@ const Signin = () => {
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
   const { user, setUser } = useUserContext();
+  
 
   const access_token = user?.access_token;
 
