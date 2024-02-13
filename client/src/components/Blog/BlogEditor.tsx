@@ -75,7 +75,7 @@ const BlogEditor = () => {
                   src={defaultBanner}
                   ref={bannerRef}
                   alt=""
-                  className="z-20"
+                  className="z-20 object-cover w-full h-full"
                 />
                 <input
                   type="file"
