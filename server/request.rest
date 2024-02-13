@@ -1,0 +1,22 @@
+POST http://localhost:5000/signup
+Content-Type: application/json
+
+{
+  "fullname": "Jeisa",
+  "email": "jeisa@yashoo.com",
+  "password": "Cipinang01"
+}
+
+###
+POST http://localhost:5000/signin
+Content-Type: application/json
+
+{
+  "requestData":{
+    "email": "jeisa.raja.jrt@gmail.com",
+    "password": "Cipinang01"
+  }
+}
+
+###
+GET http://localhost:5000/test
