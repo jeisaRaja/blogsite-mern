@@ -1,0 +1,62 @@
+/* eslint-disable react-refresh/only-export-components */
+import {
+  Dispatch,
+  FC,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from "react";
+
+export interface BlogPost {
+  title: string;
+  banner: string;
+  content: Array<string>;
+  tags: Array<string>;
+  des: string;
+  author: object;
+}
+
+export interface BlogState {
+  blog: BlogPost;
+  setBlog: Dispatch<SetStateAction<BlogPost>>;
+}
+
+export const EditorContext = createContext<BlogState | undefined>(undefined);
+
+export function useEditorContext(): BlogState {
+  const context = useContext(EditorContext);
+  if (!context) {
+    throw new Error("context used outside of provider");
+  }
+  return context;
+}
+
+interface EditorContextProviderProps {
+  children: ReactNode;
+}
+
+const dummyBlogPost: BlogPost = {
+  title: "",
+  banner: "",
+  content: [],
+  tags: [],
+  des: "",
+  author: {},
+};
+
+export const EditorContextProvider: FC<EditorContextProviderProps> = ({
+  children,
+}) => {
+  const [blog, setBlog] = useState<BlogPost>(dummyBlogPost);
+
+  const value: BlogState = {
+    blog,
+    setBlog,
+  };
+
+  return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
+};
+
+export default EditorContext;

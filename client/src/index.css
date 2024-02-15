@@ -1,6 +1,18 @@
 @import "@flaticon/flaticon-uicons/css/all/all";
 
 @tailwind base;
+@layer base {
+  h1 {
+    @apply text-3xl leading-normal;
+  }
+  h2 {
+    @apply text-xl leading-normal;
+  }
+  h3 {
+    @apply text-lg leading-normal;
+  }
+
+}
 @tailwind components;
 @tailwind utilities;
 
@@ -20,31 +32,11 @@ time, mark, audio, video {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	font-size: 100%;
-	vertical-align: baseline;
 	font-family:'Poppins';
 	overflow-x: hidden;
 }
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
+
+p a{
+  cursor: pointer;
+  text-decoration: underline;
 }

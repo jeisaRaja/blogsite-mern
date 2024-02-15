@@ -1,16 +1,8 @@
 import { useState, useEffect, createContext } from "react";
 import { Navigate } from "react-router-dom";
-import { useUserContext } from "../common/context";
 import BlogEditor from "../components/Blog/BlogEditor";
-
-export interface BlogPost {
-  title: string;
-  banner: string;
-  content: Array<string>;
-  tags: Array<string>;
-  des: string;
-  author: object;
-}
+import { BlogPost, EditorContextProvider } from "../contexts/editorContext";
+import { useUserContext } from "../contexts/userContext";
 
 const dummyBlogPost: BlogPost = {
   title: "",
@@ -22,6 +14,7 @@ const dummyBlogPost: BlogPost = {
 };
 
 export const EditorContext = createContext({});
+
 const Editor = () => {
   const [blog, setBlog] = useState(dummyBlogPost);
   const [editorState, setEditorState] = useState("editor");
@@ -39,7 +32,11 @@ const Editor = () => {
     return <Navigate to="/signin" />;
   }
 
-  return editorState === "editor" ? <BlogEditor /> : <h1>Publish Form</h1>;
+  return (
+    <EditorContextProvider>
+      {editorState === "editor" ? <BlogEditor /> : <h1>Publish Form</h1>}
+    </EditorContextProvider>
+  );
 };
 
 export default Editor;

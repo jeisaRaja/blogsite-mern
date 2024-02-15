@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useUserContext } from "../../common/context";
 import Button from "../Input/Button";
 import MenuModal from "./MenuModal";
-
+import { useUserContext } from "../../contexts/userContext";
 const Navbar = () => {
   const { user } = useUserContext();
   const [showModal, setShowModal] = useState(false);

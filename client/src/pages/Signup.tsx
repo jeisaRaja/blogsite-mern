@@ -6,9 +6,9 @@ import { storeToSession } from "../common/session";
 import AnimationWrapper from "../common/animation";
 import { authWithGoogle } from "../common/firebase";
 import googleIcon from "../../images/google.png";
-import { useUserContext } from "../common/context";
 import Navbar from "../components/Navbar/Navbar";
 import Button from "../components/Input/Button";
+import { useUserContext } from "../contexts/userContext";
 
 const Signup = () => {
   useEffect(() => {
@@ -158,9 +158,9 @@ const Signup = () => {
               Sign Up
             </Button>
             <div className="mt-5 flex justify-between gap-5 items-center w-full">
-              <hr className="w-1/2" />
-              <h1>Or</h1>
-              <hr className="w-1/2" />
+              <hr className="w-[40%]" />
+              <p>Or</p>
+              <hr className="w-[40%]" />
             </div>
             <div className="w-full">
               <Button type="submit" onclick={handleGoogleAuth}>
@@ -171,8 +171,8 @@ const Signup = () => {
               </Button>
 
               <p className="mt-5 text-center">
-                Already have an account?{" "}
-                <Link to="/signin" className="underline cursor-pointer">
+                Already have an account?
+                <Link to="/signin" className="underline cursor-pointer ml-2">
                   Sign in here
                 </Link>
               </p>

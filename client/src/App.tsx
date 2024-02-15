@@ -4,11 +4,10 @@ import Home from "./pages/Home";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import { lookInSession } from "./common/session";
-import { UserContextProvider, useUserContext } from "./common/context";
 import EditorPage from "./pages/Editor";
+import { UserContextProvider, useUserContext } from "./contexts/userContext";
 
 function App() {
-  // Move the context provider outside the useEffect
   return (
     <UserContextProvider>
       <AppComponent />

@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useUserContext } from "../../common/context";
 import { removeFromSession } from "../../common/session";
+import { useUserContext } from "../../contexts/userContext";
 
 export default function MenuModal() {
   const navigate = useNavigate();
   const { user, setUser } = useUserContext();
   const username = user?.username;
-
   function logOutUser() {
     removeFromSession("user");
     setUser(null);

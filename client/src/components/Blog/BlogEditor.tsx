@@ -2,12 +2,28 @@ import AnimationWrapper from "../../common/animation";
 import defaultBanner from "../../assets/blog banner.png";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { useRef } from "react";
-import { useUserContext } from "../../common/context";
+import React, { ChangeEvent, useRef } from "react";
+import { useUserContext } from "../../contexts/userContext";
+import { useEditorContext } from "../../contexts/editorContext";
+import { Tiptap } from "./TipTap";
 
 const BlogEditor = () => {
   const bannerRef = useRef<HTMLImageElement>(null);
   const { user } = useUserContext();
+  const { blog, setBlog } = useEditorContext();
+
+  function restrictEnterKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter") return e.preventDefault();
+  }
+
+  function handleEditorChange(
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) {
+    setBlog({
+      ...blog,
+      [e.target.name]: e.target.value,
+    });
+  }
 
   const uploadBanner = async (img: File) => {
     const apiAddr = import.meta.env.VITE_API_ROUTE;
@@ -54,6 +70,7 @@ const BlogEditor = () => {
     }
   };
 
+
   return (
     <>
       <nav className="navbar">
@@ -88,9 +105,15 @@ const BlogEditor = () => {
             </div>
             <textarea
               placeholder="Title"
-              className="text-4xl w-full outline-none mt-4 font-medium"
+              className="text-4xl w-full outline-none mt-4 font-medium resize-none h-auto"
+              onKeyDown={restrictEnterKey}
+              onChange={handleEditorChange}
+              name="title"
             ></textarea>
           </div>
+        </section>
+        <section className="ml-auto mr-auto w-[80%]">
+          <Tiptap value="Let's Write Something Cool"/>
         </section>
       </AnimationWrapper>
     </>
