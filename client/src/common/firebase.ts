@@ -4,7 +4,7 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC3vrIfXJsAVNcqpbsvZ6omBkuJTI8wmek",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "mern-blog-c0eff.firebaseapp.com",
   projectId: "mern-blog-c0eff",
   storageBucket: "mern-blog-c0eff.appspot.com",

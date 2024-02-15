@@ -1,3 +1,5 @@
+@import "@flaticon/flaticon-uicons/css/all/all";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,6 +23,7 @@ time, mark, audio, video {
 	font-size: 100%;
 	vertical-align: baseline;
 	font-family:'Poppins';
+	overflow-x: hidden;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
