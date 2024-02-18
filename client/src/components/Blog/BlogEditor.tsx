@@ -6,6 +6,7 @@ import React, { ChangeEvent, useRef } from "react";
 import { useUserContext } from "../../contexts/userContext";
 import { useEditorContext } from "../../contexts/editorContext";
 import { Tiptap } from "./TipTap";
+import AddTag from "./AddTag";
 
 const BlogEditor = () => {
   const bannerRef = useRef<HTMLImageElement>(null);
@@ -70,7 +71,6 @@ const BlogEditor = () => {
     }
   };
 
-
   return (
     <>
       <nav className="navbar">
@@ -85,8 +85,8 @@ const BlogEditor = () => {
       <AnimationWrapper>
         <Toaster />
         <section>
-          <div className="mx-auto max-w-[900px] w-full p-10">
-            <div className="relative aspect-video bg-white border-4 border-grey hover:opacity-80">
+          <div className="mx-auto max-w-[900px] w-full px-10">
+            <div className="relative aspect-video bg-white border-grey hover:opacity-80">
               <label htmlFor="uploadBanner">
                 <img
                   src={defaultBanner}
@@ -112,8 +112,9 @@ const BlogEditor = () => {
             ></textarea>
           </div>
         </section>
-        <section className="ml-auto mr-auto w-[80%]">
-          <Tiptap value="Let's Write Something Cool"/>
+        <section className="mx-auto max-w-[900px] px-10 flex flex-col justify-center" id="textEditorContainer">
+          <Tiptap />
+          <AddTag/>
         </section>
       </AnimationWrapper>
     </>

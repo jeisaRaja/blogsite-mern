@@ -6,24 +6,39 @@ import Link from "@tiptap/extension-link";
 import MenuBar from "./MenuBar";
 import AddLinkBox from "./AddLinkModal";
 import { useState } from "react";
+import Typography from "@tiptap/extension-typography";
+import Youtube from "@tiptap/extension-youtube";
+import Placeholder from "@tiptap/extension-placeholder";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const Tiptap = (props: any) => {
+export const Tiptap = () => {
   const [linkModal, setLinkModal] = useState(false);
 
   const editor = useEditor({
-    extensions: [StarterKit, Highlight, Image, Link],
-    content: props.value,
+    extensions: [
+      StarterKit,
+      Highlight,
+      Image,
+      Link,
+      Typography,
+      Placeholder.configure({
+        placeholder:"Write something..."
+      }),
+      Youtube.configure({
+        inline: true,
+        modestBranding: true,
+      }),
+    ],
+    content: "<p>",
     editorProps: {
       attributes: {
-        class:
-          "min-h-[400px] border-solid border-gray-300 outline-none shadow-md border-2 border-black rounded-md p-2 mb-[200px]",
+        class: "min-h-[150px] outline-none rounded-md mb-[200px]",
       },
     },
   });
 
   return (
-    <div className="">
+    <div className="w-full">
       <MenuBar editor={editor!} />
       <EditorContent editor={editor}>
         <div id="textEditor" className="relative">
@@ -32,11 +47,11 @@ export const Tiptap = (props: any) => {
             className="px-4 py-3 flex flex-col justify-end gap-2"
           >
             {linkModal && (
-                <AddLinkBox
-                  editor={editor!}
-                  setModal={setLinkModal}
-                  modal={linkModal}
-                />
+              <AddLinkBox
+                editor={editor!}
+                setModal={setLinkModal}
+                modal={linkModal}
+              />
             )}
             <div className="h-[2w-[300px] shadow-md px-4 py-3 flex gap-2 rounded-md border-[1px] border-gray-300 border-solid bg-white relative">
               <select
