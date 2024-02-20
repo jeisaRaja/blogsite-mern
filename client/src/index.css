@@ -23,10 +23,11 @@
     @apply list-decimal;
   }
 
-  #textEditorContainer img{
+  #textEditorContainer img {
     @apply pt-5 pb-2 w-full;
   }
-  #textEditorContainer p{
+
+  #textEditorContainer p {
     @apply cursor-text
   }
 
@@ -42,12 +43,16 @@
     @apply text-sm text-gray-500 text-center my-2;
   }
 
-  p{
+  p {
     @apply leading-snug;
   }
 
-  iframe{
+  iframe {
     @apply aspect-video w-full h-auto mx-auto my-5
+  }
+
+  a i {
+    @apply w-4 h-4
   }
 }
 

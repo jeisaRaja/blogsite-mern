@@ -16,25 +16,25 @@ export default function MenuModal() {
     <ul className="flex flex-col absolute right-[3rem] drop-shadow-sm rounded-md border-gray-100 border-solid border-2 z-10">
       <Link
         to="/editor"
-        className="cursor-pointer flex gap-3 hover:bg-gray-100 p-4 w-[200px]"
+        className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"
       >
         <i className="fi fi-rr-edit"></i>Write
       </Link>
       <Link
         to=""
-        className="cursor-pointer flex gap-3 hover:bg-gray-100 p-4 w-[200px]"
+        className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"
       >
         <i className="fi fi-rr-user"></i>Profile
       </Link>
       <Link
         to=""
-        className="cursor-pointer flex gap-3 hover:bg-gray-100 p-4 w-[200px]"
+        className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"
       >
         <i className="fi fi-rs-computer"></i>Dashboard
       </Link>
       <Link
         to=""
-        className="cursor-pointer flex gap-3 hover:bg-gray-100 p-4 w-[200px]"
+        className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"
       >
         <i className="fi fi-rr-settings-sliders"></i>Settings
       </Link>

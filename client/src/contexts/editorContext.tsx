@@ -12,10 +12,11 @@ import {
 export interface BlogPost {
   title: string;
   banner: string;
-  content: Array<string>;
+  content: string;
   tags: Array<string>;
   des: string;
   author: object;
+  draft: boolean;
 }
 
 export interface BlogState {
@@ -40,10 +41,11 @@ interface EditorContextProviderProps {
 const dummyBlogPost: BlogPost = {
   title: "",
   banner: "",
-  content: [],
+  content: "",
   tags: [],
   des: "",
   author: {},
+  draft: true,
 };
 
 export const EditorContextProvider: FC<EditorContextProviderProps> = ({
@@ -56,7 +58,9 @@ export const EditorContextProvider: FC<EditorContextProviderProps> = ({
     setBlog,
   };
 
-  return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
+  return (
+    <EditorContext.Provider value={value}>{children}</EditorContext.Provider>
+  );
 };
 
 export default EditorContext;

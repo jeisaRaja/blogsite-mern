@@ -23,6 +23,9 @@ export const signIn = async (req: Request, res: Response) => {
   if (!isPasswordCorrect) {
     return res.status(403).json({ "error": "email or password is incorrect" })
   }
+  req.session.user = {
+    user_id:user._id, email:user.personal_info.email
+  }
   res.status(200).json(formatUserData(user));
 }
 
@@ -51,6 +54,9 @@ export const signUp = async (req: Request, res: Response) => {
     })
 
     user.save().then((u) => {
+      req.session.user = {
+        user_id:user._id, email:user.personal_info.email
+      }
       return res.status(200).json(formatUserData(u))
     }).catch(e => {
       if (e.code == 11000) {
@@ -85,7 +91,7 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
         res.status(200).json(formatUserData(user));
       }
     }
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Error in googleAuth:", error);
     res.status(500).json({ "error": error.message });
   }

@@ -6,11 +6,15 @@ interface JwtPayload {
   id: string
 }
 
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+export interface RequestWithUserId extends Request {
+  user?: string
+}
+
+export const isAuthenticated = (req: RequestWithUserId, res: Response, next: NextFunction) => {
   try {
     const token: string | undefined = req.headers.authorization?.split(" ")[1];
     const payload = jwt.verify(token!, process.env.JWT_PRIVATE!) as JwtPayload;
-    console.log(payload)
+    req.user = payload.id
     next();
   } catch (error) {
     console.error("Authentication failed:", error);

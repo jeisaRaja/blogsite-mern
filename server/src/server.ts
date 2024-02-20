@@ -1,8 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-import User from './Schema/User';
+import User, { UserSession } from './Schema/User';
 import cors from 'cors';
 import admin from "firebase-admin";
 import * as fs from 'fs';
@@ -14,6 +13,8 @@ import { formatUserData } from './utils/formatUserData';
 import { UploadedFile } from './services/ImageStore';
 import { authRoutes } from './routes/authRoutes';
 import { isAuthenticated } from './middlewares/isAuthenticated';
+import editorRoutes from './routes/editorRoutes';
+import session = require('express-session');
 
 const fileContent = fs.readFileSync('./service_account_firebase.json', 'utf-8');
 const serviceAccountKey = JSON.parse(fileContent);
@@ -38,6 +39,22 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
+declare module "express-session" {
+  interface SessionData {
+    user: UserSession;
+  }
+}
+
+server.use(session({
+  secret: process.env.SESSION_SECRET!,
+  cookie: {
+    httpOnly: true,
+    maxAge: 2 * 24 * 60 * 60
+  },
+  resave: true,
+  saveUninitialized: false,
+}));
+
 admin.initializeApp(
   { credential: admin.credential.cert(serviceAccountKey) }
 );
@@ -49,6 +66,7 @@ server.listen(PORT, () => {
 });
 
 server.use(authRoutes)
+server.use('/editor', editorRoutes)
 
 server.get('/test', (req, res) => {
   console.log(`request from ${req}`)
@@ -86,7 +104,7 @@ server.post("/google-auth", async (req, res) => {
     })
 })
 
-server.post("/upload-image",isAuthenticated, upload.single('image'), async (req, res) => {
+server.post("/upload-image", isAuthenticated, upload.single('image'), async (req, res) => {
   const bannerImage = req.file as UploadedFile
 
   try {

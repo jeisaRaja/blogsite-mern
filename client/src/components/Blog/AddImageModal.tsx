@@ -35,7 +35,6 @@ export const AddImageLink = ({ editor, setModal }: AddImageLinkProps) => {
       return res.data.publicUrl;
     } catch (e) {
       toast.error("something went wrong");
-      console.log(e);
     }
   };
 
@@ -51,6 +50,8 @@ export const AddImageLink = ({ editor, setModal }: AddImageLinkProps) => {
         if (imgUrl) {
           toast.success("Image uploaded 👌");
           setlink(imgUrl);
+          editor.commands.enter();
+          setModal(false);
         }
       } catch (e) {
         toast.error("Something went wrong");

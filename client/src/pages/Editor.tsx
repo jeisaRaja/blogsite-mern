@@ -1,22 +1,12 @@
 import { useState, useEffect, createContext } from "react";
 import { Navigate } from "react-router-dom";
 import BlogEditor from "../components/Blog/BlogEditor";
-import { BlogPost, EditorContextProvider } from "../contexts/editorContext";
+import { EditorContextProvider } from "../contexts/editorContext";
 import { useUserContext } from "../contexts/userContext";
-
-const dummyBlogPost: BlogPost = {
-  title: "",
-  banner: "",
-  content: [],
-  tags: [],
-  des: "",
-  author: {},
-};
 
 export const EditorContext = createContext({});
 
 const Editor = () => {
-  const [blog, setBlog] = useState(dummyBlogPost);
   const [editorState, setEditorState] = useState("editor");
   const [loading, setLoading] = useState(true);
   const { user } = useUserContext();

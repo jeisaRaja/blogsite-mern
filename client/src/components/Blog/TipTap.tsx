@@ -9,11 +9,11 @@ import { useState } from "react";
 import Typography from "@tiptap/extension-typography";
 import Youtube from "@tiptap/extension-youtube";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useEditorContext } from "../../contexts/editorContext";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Tiptap = () => {
   const [linkModal, setLinkModal] = useState(false);
-
+  const { blog, setBlog } = useEditorContext();
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -22,7 +22,7 @@ export const Tiptap = () => {
       Link,
       Typography,
       Placeholder.configure({
-        placeholder:"Write something..."
+        placeholder: "Write something...",
       }),
       Youtube.configure({
         inline: true,
@@ -34,6 +34,9 @@ export const Tiptap = () => {
       attributes: {
         class: "min-h-[150px] outline-none rounded-md mb-[200px]",
       },
+    },
+    onUpdate({ editor }) {
+      setBlog({ ...blog, content: editor.getHTML() });
     },
   });
 
