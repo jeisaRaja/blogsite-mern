@@ -3,9 +3,6 @@ import Blog from "../Schema/Blog";
 import User from "../Schema/User";
 import { nanoid } from "nanoid";
 import Ajv from "ajv";
-import { resolveAny } from "dns";
-import { RequestWithUserId } from "../middlewares/isAuthenticated";
-import { read } from "fs";
 
 const ajv = new Ajv()
 
@@ -38,7 +35,7 @@ const BlogSchema = ajv.compile({
     draft: { type: "boolean" }
   },
   required: ['author', 'title'],
-  additionalProperties: false
+  additionalProperties: true
 })
 
 export const saveDraft = async (req: Request, res: Response) => {
@@ -58,11 +55,12 @@ export const saveDraft = async (req: Request, res: Response) => {
   res.status(200).json(newBlog)
 }
 
-export const getDrafts = async (req: RequestWithUserId, res: Response) => {
-  const user = await User.findById(req.user)
-  const drafts = await Blog.find({author:user, draft:true})
-  if(!drafts){
-    return res.status(200).json({draft:0})
+export const getDrafts = async (req: Request, res: Response) => {
+  const user = await User.findById(req.session.user?.user_id)
+  const drafts = await Blog.find({ author: user, draft: true }).select('blog_id title banner content tags des author draft').exec()
+  console.log("drafts")
+  if (!drafts) {
+    return res.status(200).json({ draft: 0 })
   }
   res.status(200).json(drafts)
 }

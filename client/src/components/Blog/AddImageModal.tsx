@@ -7,7 +7,6 @@ import {
   SetStateAction,
   useState,
 } from "react";
-import { useUserContext } from "../../contexts/userContext";
 import toast from "react-hot-toast";
 
 interface AddImageLinkProps {
@@ -16,7 +15,6 @@ interface AddImageLinkProps {
 }
 export const AddImageLink = ({ editor, setModal }: AddImageLinkProps) => {
   const [input, setInput] = useState("");
-  const { user } = useUserContext();
 
   const uploadImage = async (img: File) => {
     const apiAddr = import.meta.env.VITE_API_ROUTE;
@@ -28,9 +26,9 @@ export const AddImageLink = ({ editor, setModal }: AddImageLinkProps) => {
         url: `${apiAddr}/upload-image`,
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user?.access_token}`,
         },
         data: formData,
+        withCredentials: true,
       });
       return res.data.publicUrl;
     } catch (e) {

@@ -1,19 +1,16 @@
-import { Link, useNavigate } from "react-router-dom";
-import { removeFromSession } from "../../common/session";
+import { Link } from "react-router-dom";
 import { useUserContext } from "../../contexts/userContext";
 
 export default function MenuModal() {
-  const navigate = useNavigate();
-  const { user, setUser } = useUserContext();
-  const username = user?.username;
-  function logOutUser() {
-    removeFromSession("user");
-    setUser(null);
-    navigate("/signin");
+  const auth = useUserContext();
+  const username = auth.user?.username;
+
+  async function logOutUser() {
+    auth.logout();
   }
 
   return (
-    <ul className="flex flex-col absolute right-[3rem] drop-shadow-sm rounded-md border-gray-100 border-solid border-2 z-10">
+    <ul className="bg-white flex flex-col absolute right-[3rem] drop-shadow-sm rounded-md border-gray-100 border-solid border-2 z-10">
       <Link
         to="/editor"
         className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"

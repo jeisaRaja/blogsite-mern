@@ -5,7 +5,7 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import MenuBar from "./MenuBar";
 import AddLinkBox from "./AddLinkModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Typography from "@tiptap/extension-typography";
 import Youtube from "@tiptap/extension-youtube";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -14,6 +14,7 @@ import { useEditorContext } from "../../contexts/editorContext";
 export const Tiptap = () => {
   const [linkModal, setLinkModal] = useState(false);
   const { blog, setBlog } = useEditorContext();
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -29,7 +30,7 @@ export const Tiptap = () => {
         modestBranding: true,
       }),
     ],
-    content: "<p>",
+    content: "",
     editorProps: {
       attributes: {
         class: "min-h-[150px] outline-none rounded-md mb-[200px]",
@@ -39,6 +40,10 @@ export const Tiptap = () => {
       setBlog({ ...blog, content: editor.getHTML() });
     },
   });
+
+  useEffect(() => {
+    editor?.commands.setContent(blog.content);
+  }, [blog.content, editor]);
 
   return (
     <div className="w-full">

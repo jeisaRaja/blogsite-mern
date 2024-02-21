@@ -1,22 +1,23 @@
+import axios from "axios";
 import React, {
   createContext,
-  Dispatch,
-  SetStateAction,
   useContext,
   FC,
   ReactNode,
 } from "react";
 
-interface UserFromServer {
-  access_token: string;
+export interface UserFromServer {
+  user_id: string;
   username: string;
   profile_img: string;
   fullname: string;
+  email: string;
 }
 
 interface UserState {
-  user: UserFromServer | null;
-  setUser: Dispatch<SetStateAction<UserFromServer | null>>;
+  user: UserFromServer | undefined;
+  login: (user: UserFromServer) => void;
+  logout: () => void;
 }
 
 const UserContext = createContext<UserState | undefined>(undefined);
@@ -37,16 +38,35 @@ interface UserContextProviderProps {
 export const UserContextProvider: FC<UserContextProviderProps> = ({
   children,
 }) => {
-  const [user, setUser] = React.useState<UserFromServer |null>(null);
+  const [user, setUser] = React.useState<UserFromServer | undefined>(undefined);
+  const login = (user: UserFromServer) => {
+    setUser(user);
+  };
+  const logout = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_ROUTE}/signout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response)
+      setUser(undefined);
+
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+
+  };
 
   const value: UserState = {
     user,
-    setUser,
+    login,
+    logout,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 export default UserContext;
-
-

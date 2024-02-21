@@ -2,7 +2,6 @@ import axios from "axios";
 import { FormEvent, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Link, Navigate } from "react-router-dom";
-import { storeToSession } from "../common/session";
 import AnimationWrapper from "../common/animation";
 import { authWithGoogle } from "../common/firebase";
 import googleIcon from "../../images/google.png";
@@ -22,7 +21,6 @@ const Signup = () => {
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
   const { user, setUser } = useUserContext();
-  const access_token = user?.access_token;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullname, setFullname] = useState("");
@@ -80,7 +78,6 @@ const Signup = () => {
     axios
       .post(apiRoute, { requestData })
       .then((res) => {
-        storeToSession("user", JSON.stringify(res.data));
         setUser(res.data);
       })
       .catch((e) => {
@@ -104,7 +101,7 @@ const Signup = () => {
       toast.error("There is trouble with google");
     }
   };
-  return access_token ? (
+  return user !== null ? (
     <Navigate to="/" />
   ) : (
     <>

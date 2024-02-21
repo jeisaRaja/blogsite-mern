@@ -4,22 +4,23 @@ import axios, { AxiosError } from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import React, {
   ChangeEvent,
-  useCallback,
+  Dispatch,
+  SetStateAction,
   useEffect,
   useRef,
-  useState,
 } from "react";
 import { useUserContext } from "../../contexts/userContext";
-import { BlogPost, useEditorContext } from "../../contexts/editorContext";
+import { useEditorContext } from "../../contexts/editorContext";
 import { Tiptap } from "./TipTap";
 import AddTag from "./AddTag";
-import DraftList from "./DraftList";
 
-const BlogEditor = () => {
+interface BlogEditorProps {
+  setDraftsUpdated: Dispatch<SetStateAction<boolean>>;
+}
+const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
   const bannerRef = useRef<HTMLImageElement>(null);
-  const { user } = useUserContext();
+  const auth = useUserContext();
   const { blog, setBlog } = useEditorContext();
-  const [drafts, setDrafts] = useState<Array<BlogPost>>([]);
 
   function restrictEnterKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter") return e.preventDefault();
@@ -44,11 +45,10 @@ const BlogEditor = () => {
         url: `${apiAddr}/upload-image`,
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user?.access_token}`,
         },
         data: formData,
+        withCredentials: true,
       });
-      console.log(res);
       return res.data.publicUrl;
     } catch (e) {
       toast.error("something went wrong");
@@ -82,7 +82,6 @@ const BlogEditor = () => {
 
   const handleSaveDraft = async () => {
     try {
-      console.log("blog", blog);
       if (!blog.title || blog.title.length < 10) {
         return toast.error("Title length must be at least 10 characters");
       }
@@ -91,14 +90,13 @@ const BlogEditor = () => {
         `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
         blog,
         {
-          headers: {
-            Authorization: `Bearer ${user?.access_token}`,
-          },
+          withCredentials: true,
         }
       );
       if (res.status == 200) {
         toast.dismiss();
         toast.success("Blog Saved ✅");
+        setDraftsUpdated(true);
       }
     } catch (e) {
       toast.dismiss();
@@ -106,40 +104,10 @@ const BlogEditor = () => {
     }
   };
 
-  const getDrafts = useCallback(async (access_token: string) => {
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
-      return res.data;
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getDrafts(user?.access_token || "");
-        if (response) {
-          setDrafts(response); // Use await here, assuming response is the array of drafts
-        }
-        const { access_token, ...userWithoutToken } = user || {};
-        setBlog((prevBlog) => ({ ...prevBlog, author: userWithoutToken }));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    if (user !== null) {
-      fetchData();
-    }
-  }, [user, setBlog, getDrafts]);
+    const { ...data } = auth.user;
+    setBlog((prevBlog) => ({ ...prevBlog, author: data }));
+  }, [auth.user, setBlog]);
 
   return (
     <>
@@ -158,8 +126,6 @@ const BlogEditor = () => {
         <Toaster />
         <section>
           <div className="mx-auto max-w-[900px] w-full px-10">
-            {console.log(drafts.length)}
-            {drafts.length > 0 ? <DraftList drafts={drafts} /> : " "}
             <div className="relative aspect-video bg-white border-grey hover:opacity-80">
               <label htmlFor="uploadBanner">
                 <img
@@ -178,11 +144,12 @@ const BlogEditor = () => {
               </label>
             </div>
             <textarea
-              placeholder="Title"
+              placeholder="Write Your Title Here"
               className="text-4xl w-full outline-none mt-4 font-medium resize-none h-auto"
               onKeyDown={restrictEnterKey}
               onChange={handleEditorChange}
               name="title"
+              value={blog.title}
             ></textarea>
           </div>
         </section>

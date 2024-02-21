@@ -37,7 +37,11 @@ db.once('open', () => {
 
 const server = express();
 server.use(express.json());
-server.use(cors());
+server.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: "PUT, POST, PATCH, DELETE, GET"
+}));
 
 declare module "express-session" {
   interface SessionData {
@@ -49,7 +53,9 @@ server.use(session({
   secret: process.env.SESSION_SECRET!,
   cookie: {
     httpOnly: true,
-    maxAge: 2 * 24 * 60 * 60
+    maxAge: 2 * 24 * 60 * 60,
+    sameSite: 'lax',
+    secure: false
   },
   resave: true,
   saveUninitialized: false,

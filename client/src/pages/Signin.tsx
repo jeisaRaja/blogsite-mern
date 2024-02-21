@@ -2,7 +2,6 @@ import axios from "axios";
 import { FormEvent, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Link, Navigate } from "react-router-dom";
-import { storeToSession } from "../common/session";
 import AnimationWrapper from "../common/animation";
 import { authWithGoogle } from "../common/firebase";
 import googleIcon from "../../images/google.png";
@@ -24,9 +23,7 @@ const Signin = () => {
   const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // regex for email
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
-  const { user, setUser } = useUserContext();
-
-  const access_token = user?.access_token;
+  const auth = useUserContext();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,10 +72,9 @@ const Signin = () => {
   ) => {
     console.log(apiRoute);
     axios
-      .post(apiRoute, { requestData })
+      .post(apiRoute, { requestData }, { withCredentials: true })
       .then((res) => {
-        storeToSession("user", JSON.stringify(res.data));
-        setUser(res.data);
+        auth.login(res.data);
       })
       .catch((e) => {
         console.log(e);
@@ -86,7 +82,7 @@ const Signin = () => {
       });
   };
 
-  return access_token ? (
+  return auth.user !== undefined ? (
     <Navigate to="/" />
   ) : (
     <>

@@ -1,30 +1,59 @@
 import { useState, useEffect, createContext } from "react";
-import { Navigate } from "react-router-dom";
 import BlogEditor from "../components/Blog/BlogEditor";
-import { EditorContextProvider } from "../contexts/editorContext";
+import {
+  BlogPost,
+  EditorContextProvider,
+  useEditorContext,
+} from "../contexts/editorContext";
 import { useUserContext } from "../contexts/userContext";
+import Navbar from "../components/Navbar/Navbar";
+import axios from "axios";
+import DraftList from "../components/Blog/DraftList";
 
 export const EditorContext = createContext({});
 
 const Editor = () => {
-  const [editorState, setEditorState] = useState("editor");
-  const [loading, setLoading] = useState(true);
-  const { user } = useUserContext();
+  const auth = useUserContext();
+  const [drafts, setDrafts] = useState<Array<BlogPost>>([]);
+  const [fetched, setFetched] = useState(false);
+  const [draftsUpdated, setDraftsUpdated] = useState(false);
 
   useEffect(() => {
-    setLoading(false);
-  }, [user]);
-
-  if (loading) {
-    return <h1>Loading...</h1>;
-  }
-  if (!user || !user.access_token) {
-    return <Navigate to="/signin" />;
-  }
+    const getDrafts = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
+          {
+            withCredentials: true,
+          }
+        );
+        return res.data;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const fetchData = async () => {
+      try {
+        const response = await getDrafts();
+        if (response) {
+          setDrafts(response);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (!fetched || draftsUpdated) {
+      fetchData();
+      setFetched(true);
+      setDraftsUpdated(false);
+    }
+  }, [fetched, draftsUpdated, auth.user]);
 
   return (
     <EditorContextProvider>
-      {editorState === "editor" ? <BlogEditor /> : <h1>Publish Form</h1>}
+      <Navbar />
+      {drafts.length > 0 ? <DraftList drafts={drafts} /> : ""}
+      <BlogEditor setDraftsUpdated={setDraftsUpdated} />
     </EditorContextProvider>
   );
 };

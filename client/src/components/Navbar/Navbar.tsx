@@ -2,28 +2,27 @@ import { useState } from "react";
 import Button from "../Input/Button";
 import MenuModal from "./MenuModal";
 import { useUserContext } from "../../contexts/userContext";
+import { Link } from "react-router-dom";
 const Navbar = () => {
-  const { user } = useUserContext();
+  const auth = useUserContext();
   const [showModal, setShowModal] = useState(false);
-  const access_token = user?.access_token;
 
-  const profilPicture = user?.profile_img;
   return (
     <>
       <header className="w-full h-[100px] flex items-center justify-between py-5 px-[100px]">
         <div className=""></div>
         <nav className="flex flex-row w-full">
-          {access_token ? (
+          {auth.user ? (
             <div className="flex w-full items-center">
               <ul className="mr-auto">
                 <div className="py-1 cursor-pointer">
-                  <li className="text-2xl font-semibold p-2">Sharify</li>
+                  <Link to='/' className="text-2xl font-semibold p-2">Sharify</Link>
                 </div>
               </ul>
               <ul className="ml-auto">
                 <li>
                   <img
-                    src={profilPicture}
+                    src={auth.user.profile_img}
                     alt=""
                     className="w-12 h-12 rounded-full"
                     onClick={() => {
