@@ -3,6 +3,7 @@ import Blog from "../Schema/Blog";
 import User from "../Schema/User";
 import { nanoid } from "nanoid";
 import Ajv from "ajv";
+import { formatUserData } from "../utils/formatUserData";
 
 const ajv = new Ajv()
 
@@ -21,6 +22,8 @@ interface BlogPost {
 const BlogSchema = ajv.compile({
   type: "object",
   properties: {
+    _id: { type: "string" },
+    blog_id: { type: "string" },
     title: { type: "string" },
     banner: { type: "string" },
     content: { type: "string" },
@@ -29,19 +32,24 @@ const BlogSchema = ajv.compile({
     author: {
       type: "object",
       properties: {
+        user_id: { type: "string" },
+        profile_img: { type: "string" },
+        fullname: { type: "string" },
+        email: { type: "string" },
         username: { type: "string" }
       }
     },
     draft: { type: "boolean" }
   },
   required: ['author', 'title'],
-  additionalProperties: true
+  additionalProperties: false
 })
 
 export const saveDraft = async (req: Request, res: Response) => {
   const valid = BlogSchema(req.body)
+  console.log(req.body)
   if (!valid) {
-    console.log(valid)
+    console.log("the payload invalid", valid)
     return res.status(400).json({ msg: "The payload is invalid" })
   }
   const { title, banner, content, tags, des, author, draft } = req.body as BlogPost
@@ -57,10 +65,17 @@ export const saveDraft = async (req: Request, res: Response) => {
 
 export const getDrafts = async (req: Request, res: Response) => {
   const user = await User.findById(req.session.user?.user_id)
-  const drafts = await Blog.find({ author: user, draft: true }).select('blog_id title banner content tags des author draft').exec()
-  console.log("drafts")
+  if (!user) {
+    return res.status(400).json({ draft: 0 })
+  }
+  const drafts = await Blog.find({ author: user, draft: true }).select('blog_id title banner content tags des draft').exec()
   if (!drafts) {
     return res.status(200).json({ draft: 0 })
   }
-  res.status(200).json(drafts)
+  const author = formatUserData(user)
+  const draftsWithAuthor = drafts.map((draft) => {
+    return { ...draft.toObject(), author }
+  })
+  console.log(draftsWithAuthor)
+  res.status(200).json(draftsWithAuthor)
 }

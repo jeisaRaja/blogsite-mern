@@ -10,6 +10,7 @@ interface JwtPayload {
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log(req.session.user)
     if (!req.session.user) {
       return res.status(400).json({ message: "Please sign in again" })
     }

@@ -107,17 +107,19 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
   useEffect(() => {
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
-  }, [auth.user, setBlog]);
+  }, []);
 
   return (
     <>
       <nav className="navbar">
-        <p className="max-md:hidden text-black line-clamp-1 w-full ">
-          New Blog
-        </p>
-        <div className="flex gap-4 ml-auto">
-          <button className="btn-dark py-2">Publish</button>
-          <button className="btn-light py-2" onClick={handleSaveDraft}>
+        <div className="flex gap-4 mx-auto p-10 max-w-[900px]">
+          <button className="p-2 w-[6rem] bg-gray-900 text-white rounded-md hover:bg-gray-700">
+            Publish
+          </button>
+          <button
+            className="p-2 w-[6rem] border border-black rounded-md outline-none hover:bg-gray-100"
+            onClick={handleSaveDraft}
+          >
             Save Draft
           </button>
         </div>

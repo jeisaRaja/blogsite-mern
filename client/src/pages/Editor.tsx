@@ -1,10 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import BlogEditor from "../components/Blog/BlogEditor";
-import {
-  BlogPost,
-  EditorContextProvider,
-  useEditorContext,
-} from "../contexts/editorContext";
+import { BlogPost, EditorContextProvider } from "../contexts/editorContext";
 import { useUserContext } from "../contexts/userContext";
 import Navbar from "../components/Navbar/Navbar";
 import axios from "axios";

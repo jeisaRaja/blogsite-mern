@@ -23,6 +23,8 @@ export interface BlogPost {
 export interface BlogState {
   blog: BlogPost;
   setBlog: Dispatch<SetStateAction<BlogPost>>;
+  loadDraftClicked: boolean;
+  setLoadDraftClicked: Dispatch<SetStateAction<boolean>>;
 }
 
 export const EditorContext = createContext<BlogState | undefined>(undefined);
@@ -54,10 +56,12 @@ export const EditorContextProvider: FC<EditorContextProviderProps> = ({
   children,
 }) => {
   const [blog, setBlog] = useState<BlogPost>(dummyBlogPost);
-
+  const [loadDraftClicked, setLoadDraftClicked] = useState(false);
   const value: BlogState = {
     blog,
     setBlog,
+    loadDraftClicked,
+    setLoadDraftClicked,
   };
 
   return (
