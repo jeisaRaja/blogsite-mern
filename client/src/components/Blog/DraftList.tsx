@@ -4,11 +4,12 @@ interface DraftListProps {
   drafts: BlogPost[];
 }
 const DraftList = ({ drafts }: DraftListProps) => {
-  const { setBlog, setLoadDraftClicked } = useEditorContext();
+  const { setBlog, setLoadDraftClicked, setTags } = useEditorContext();
   const handleDraftClick = (i: number) => {
     const draft = drafts[i];
     setBlog(draft);
     setLoadDraftClicked(true);
+    setTags(draft.tags);
   };
 
   return (

@@ -4,7 +4,7 @@ import { useEditorContext } from "../../contexts/editorContext";
 const AddTag = () => {
   const [input, setInput] = useState("");
   const ref = useRef<HTMLInputElement>(null);
-  const [tags, setTags] = useState<string[]>([]);
+  const { tags, setTags } = useEditorContext();
   const { setBlog } = useEditorContext();
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {

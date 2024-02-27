@@ -1,12 +1,10 @@
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect } from "react";
 import BlogEditor from "../components/Blog/BlogEditor";
 import { BlogPost, EditorContextProvider } from "../contexts/editorContext";
 import { useUserContext } from "../contexts/userContext";
 import Navbar from "../components/Navbar/Navbar";
 import axios from "axios";
 import DraftList from "../components/Blog/DraftList";
-
-export const EditorContext = createContext({});
 
 const Editor = () => {
   const auth = useUserContext();

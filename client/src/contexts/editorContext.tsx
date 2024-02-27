@@ -25,6 +25,8 @@ export interface BlogState {
   setBlog: Dispatch<SetStateAction<BlogPost>>;
   loadDraftClicked: boolean;
   setLoadDraftClicked: Dispatch<SetStateAction<boolean>>;
+  tags: string[];
+  setTags: Dispatch<SetStateAction<string[]>>;
 }
 
 export const EditorContext = createContext<BlogState | undefined>(undefined);
@@ -41,7 +43,7 @@ interface EditorContextProviderProps {
   children: ReactNode;
 }
 
-export const dummyBlogPost: BlogPost = {
+const dummyBlogPost: BlogPost = {
   _id: "",
   title: "",
   banner: "",
@@ -55,6 +57,7 @@ export const dummyBlogPost: BlogPost = {
 export const EditorContextProvider: FC<EditorContextProviderProps> = ({
   children,
 }) => {
+  const [tags, setTags] = useState<string[]>([]);
   const [blog, setBlog] = useState<BlogPost>(dummyBlogPost);
   const [loadDraftClicked, setLoadDraftClicked] = useState(false);
   const value: BlogState = {
@@ -62,6 +65,8 @@ export const EditorContextProvider: FC<EditorContextProviderProps> = ({
     setBlog,
     loadDraftClicked,
     setLoadDraftClicked,
+    tags,
+    setTags,
   };
 
   return (
