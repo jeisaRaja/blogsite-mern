@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getDrafts, saveDraft } from "../controllers/editorControllers";
+import { getDrafts, saveDraft, updateDraft } from "../controllers/editorControllers";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 const editorRoutes = Router()
@@ -7,5 +7,6 @@ const editorRoutes = Router()
 editorRoutes.route('/draft')
   .post(isAuthenticated, saveDraft)
   .get(isAuthenticated, getDrafts)
+  .put(isAuthenticated, updateDraft)
 
 export default editorRoutes

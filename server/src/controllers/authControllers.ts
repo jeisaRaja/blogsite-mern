@@ -32,7 +32,6 @@ export const signIn = async (req: Request, res: Response) => {
   if (!isPasswordCorrect) {
     return res.status(403).json({ "error": "email or password is incorrect" })
   }
-  console.log("Infinite Loop?", nanoid(4))
   req.session.user = {
     user_id: user._id, email: user.personal_info.email
   }

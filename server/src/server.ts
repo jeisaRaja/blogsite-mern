@@ -98,7 +98,6 @@ server.post("/google-auth", async (req, res) => {
           await user.save()
         }
         else {
-          console.log(user)
           if (!user.google_auth) {
             return res.status(403).json({ "error": "This email was signed up without google, please use email and password to log in" })
           }
@@ -117,7 +116,6 @@ server.post("/upload-image", isAuthenticated, upload.single('image'), async (req
     let pathFromBucket = await uploadFile(bannerImage);
     return res.status(200).json({ publicUrl: pathFromBucket })
   } catch (e) {
-    console.log(e)
     return res.status(500).json({ message: "Failed to upload image" })
   }
 })
