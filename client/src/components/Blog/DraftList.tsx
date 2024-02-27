@@ -6,13 +6,11 @@ interface DraftListProps {
 const DraftList = ({ drafts }: DraftListProps) => {
   const { setBlog, setLoadDraftClicked } = useEditorContext();
   const handleDraftClick = (i: number) => {
-    // Update the blog state when a draft is clicked
     const draft = drafts[i];
     setBlog(draft);
     setLoadDraftClicked(true);
   };
 
-  console.log(drafts);
   return (
     <div className="w-full min-h-[100px] bg-gray-200">
       {drafts.map((draft, i) => {

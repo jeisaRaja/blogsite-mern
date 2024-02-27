@@ -53,7 +53,7 @@ server.use(session({
   secret: process.env.SESSION_SECRET!,
   cookie: {
     httpOnly: true,
-    maxAge: 2 * 24 * 60 * 60,
+    maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax',
     secure: false
   },

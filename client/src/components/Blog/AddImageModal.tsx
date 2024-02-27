@@ -73,6 +73,7 @@ export const AddImageLink = ({ editor, setModal }: AddImageLinkProps) => {
     setModal(false);
     setInput("");
     editor.commands.enter();
+    editor.commands.setBlockquote()
   };
   return (
     <div

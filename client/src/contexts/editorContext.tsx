@@ -10,7 +10,7 @@ import {
 } from "react";
 
 export interface BlogPost {
-  id?: string;
+  _id?: string;
   title: string;
   banner: string;
   content: string;
@@ -41,8 +41,8 @@ interface EditorContextProviderProps {
   children: ReactNode;
 }
 
-const dummyBlogPost: BlogPost = {
-  id: "",
+export const dummyBlogPost: BlogPost = {
+  _id: "",
   title: "",
   banner: "",
   content: "",

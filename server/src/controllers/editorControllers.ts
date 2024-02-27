@@ -49,18 +49,25 @@ export const saveDraft = async (req: Request, res: Response) => {
   const valid = BlogSchema(req.body)
   console.log(req.body)
   if (!valid) {
-    console.log("the payload invalid", valid)
     return res.status(400).json({ msg: "The payload is invalid" })
   }
   const { title, banner, content, tags, des, author, draft } = req.body as BlogPost
-  const blogAuthor = await User.findOne({ "personal_info.username": author.username })
+  const blogAuthor = await User.findById(req.session.user?.user_id)
+  if (!blogAuthor) {
+    return res.status(400).json({ message: "User does not exist in database" })
+  }
+  const drafts = await Blog.find({ author: blogAuthor, draft: true }).select('blog_id title banner content tags des draft').exec()
+  console.log("drafts length: ", drafts.length)
+  console.log(drafts)
+  if (drafts.length >= 5) {
+    return res.status(400).json( "Draft limit reached, maximum is 5." )
+  }
   let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-') + nanoid(5)
-  console.log(draft)
   const newBlog = new Blog({
     title, banner, content, tags, des, author: blogAuthor?._id, blog_id, draft: Boolean(draft)
   })
   await newBlog.save()
-  res.status(200).json(newBlog)
+  res.status(200).json(newBlog._id)
 }
 
 export const getDrafts = async (req: Request, res: Response) => {
@@ -76,6 +83,5 @@ export const getDrafts = async (req: Request, res: Response) => {
   const draftsWithAuthor = drafts.map((draft) => {
     return { ...draft.toObject(), author }
   })
-  console.log(draftsWithAuthor)
   res.status(200).json(draftsWithAuthor)
 }

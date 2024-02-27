@@ -81,32 +81,41 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
   };
 
   const handleSaveDraft = async () => {
+    console.log(blog)
     try {
       if (!blog.title || blog.title.length < 10) {
         return toast.error("Title length must be at least 10 characters");
       }
       toast.loading("Saving...");
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
-        blog,
-        {
-          withCredentials: true,
-        }
-      );
+      const method = blog._id === "" ? "POST" : "PUT";
+      const res = await axios({
+        withCredentials: true,
+        data: blog,
+        url: `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
+        method: method,
+      });
       if (res.status == 200) {
         toast.dismiss();
-        toast.success("Blog Saved ✅");
         setDraftsUpdated(true);
+        setBlog((prevBlog) => ({ ...prevBlog, _id: res.data }));
+        toast.success("Blog Saved ✅");
       }
     } catch (e) {
       toast.dismiss();
-      toast.error((e as AxiosError).message);
+      const axiosError = e as AxiosError;
+      const responseData = axiosError.response?.data;
+      if (typeof responseData === "string") {
+        toast.error(responseData);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 
   useEffect(() => {
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

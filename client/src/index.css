@@ -24,7 +24,7 @@
   }
 
   #textEditorContainer img {
-    @apply pt-5 pb-2 w-full;
+    @apply mt-5 mb-1 w-full;
   }
 
   #textEditorContainer p {
