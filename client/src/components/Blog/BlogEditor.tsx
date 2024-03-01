@@ -81,7 +81,7 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
   };
 
   const handleSaveDraft = async () => {
-    console.log(blog)
+    console.log(blog);
     try {
       if (!blog.title || blog.title.length < 10) {
         return toast.error("Title length must be at least 10 characters");
@@ -115,8 +115,11 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
   useEffect(() => {
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
+    if (bannerRef.current) {
+      bannerRef.current.src = blog.banner;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [blog.banner]);
 
   return (
     <>
@@ -137,7 +140,15 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
         <Toaster />
         <section>
           <div className="mx-auto max-w-[900px] w-full px-10">
-            <div className="relative aspect-video bg-white border-grey hover:opacity-80">
+            <textarea
+              placeholder="Write Your Title Here"
+              className="text-4xl w-full outline-none mt-4 font-medium resize-none h-auto"
+              onKeyDown={restrictEnterKey}
+              onChange={handleEditorChange}
+              name="title"
+              value={blog.title}
+            ></textarea>
+            <div className="relative aspect-video bg-white border-grey hover:opacity-80 mb-5">
               <label htmlFor="uploadBanner">
                 <img
                   src={defaultBanner}
@@ -154,14 +165,6 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
                 />
               </label>
             </div>
-            <textarea
-              placeholder="Write Your Title Here"
-              className="text-4xl w-full outline-none mt-4 font-medium resize-none h-auto"
-              onKeyDown={restrictEnterKey}
-              onChange={handleEditorChange}
-              name="title"
-              value={blog.title}
-            ></textarea>
           </div>
         </section>
         <section

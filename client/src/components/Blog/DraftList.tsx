@@ -13,20 +13,28 @@ const DraftList = ({ drafts }: DraftListProps) => {
   };
 
   return (
-    <div className="w-full min-h-[100px] bg-gray-200">
-      {drafts.map((draft, i) => {
-        return (
-          <button
-            key={i}
-            className="block"
-            onClick={() => {
-              handleDraftClick(i);
-            }}
-          >
-            {draft.title}
-          </button>
-        );
-      })}
+    <div className="w-full min-h-[100px] max-w-[900px] mx-auto px-10">
+      <h2 className="my-2">Your Drafts</h2>
+      <div className="w-full flex gap-4 justify-between">
+        {drafts.map((draft, i) => {
+          return (
+            <div
+              key={i}
+              className="w-full rounded-md bg-white shadow-md border-2 border-solid border-gray-100 p-2 cursor-pointer hover:opacity-60"
+              onClick={() => {
+                handleDraftClick(i);
+              }}
+            >
+              <img
+                src={draft.banner}
+                alt=""
+                className="w-full h-[80px] object-cover mb-2"
+              />
+              {draft.title}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
