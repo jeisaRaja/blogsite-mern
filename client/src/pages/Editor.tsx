@@ -13,6 +13,7 @@ const Editor = () => {
   const [draftsUpdated, setDraftsUpdated] = useState(false);
 
   useEffect(() => {
+    console.log(draftsUpdated)
     const getDrafts = async () => {
       try {
         const res = await axios.get(
@@ -46,7 +47,11 @@ const Editor = () => {
   return (
     <EditorContextProvider>
       <Navbar />
-      {drafts.length > 0 ? <DraftList drafts={drafts} /> : ""}
+      {drafts.length > 0 ? (
+        <DraftList drafts={drafts} setDraftsUpdated={setDraftsUpdated} />
+      ) : (
+        ""
+      )}
       <BlogEditor setDraftsUpdated={setDraftsUpdated} />
     </EditorContextProvider>
   );

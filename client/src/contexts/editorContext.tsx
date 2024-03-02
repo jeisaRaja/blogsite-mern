@@ -10,6 +10,7 @@ import {
 } from "react";
 
 export interface BlogPost {
+  blog_id?: string;
   _id?: string;
   title: string;
   banner: string;
@@ -44,6 +45,7 @@ interface EditorContextProviderProps {
 }
 
 const dummyBlogPost: BlogPost = {
+  blog_id: "",
   _id: "",
   title: "",
   banner: "",

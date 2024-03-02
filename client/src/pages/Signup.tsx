@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Link, Navigate } from "react-router-dom";
 import AnimationWrapper from "../common/animation";
@@ -10,17 +10,12 @@ import Button from "../components/Input/Button";
 import { useUserContext } from "../contexts/userContext";
 
 const Signup = () => {
-  useEffect(() => {
-    setFullname("");
-    setEmail("");
-    setPassword("");
-    setRepeatPassword("");
-  }, []);
   const apiRoute = import.meta.env.VITE_API_ROUTE;
   const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // regex for email
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
-  const { user, setUser } = useUserContext();
+  const auth = useUserContext();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullname, setFullname] = useState("");
@@ -78,7 +73,7 @@ const Signup = () => {
     axios
       .post(apiRoute, { requestData })
       .then((res) => {
-        setUser(res.data);
+        auth.login(res.data);
       })
       .catch((e) => {
         console.log(e);
@@ -101,7 +96,7 @@ const Signup = () => {
       toast.error("There is trouble with google");
     }
   };
-  return user !== null ? (
+  return auth.user !== undefined ? (
     <Navigate to="/" />
   ) : (
     <>
