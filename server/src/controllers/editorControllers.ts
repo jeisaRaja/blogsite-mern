@@ -96,7 +96,47 @@ export const updateDraft = async (req: Request, res: Response) => {
     console.log("user and author are not the same person")
     return res.status(400).json("You are not authorized to update this blog post")
   }
-  const updatedBlog = await Blog.updateOne({blog_id}, {title, banner, content, tags, des})
+  const updatedBlog = await Blog.updateOne({ blog_id }, { title, banner, content, tags, des })
   console.log(updatedBlog)
-    res.status(200).json("Success")
+  res.status(200).json("Success")
+}
+
+const DeleteDraftSchema = ajv.compile({
+  type: "object",
+  properties: {
+    blog_id: { type: "string" },
+    author: {
+      type: "object",
+      properties: {
+        user_id: { type: "string" },
+        profile_img: { type: "string" },
+        fullname: { type: "string" },
+        email: { type: "string" },
+        username: { type: "string" }
+      }
+    },
+    draft: { type: "boolean" }
+  },
+  required: ['author', 'blog_id'],
+  additionalProperties: false
+})
+export const deleteDraft = async (req: Request, res: Response) => {
+  console.log("deleting a draft")
+  console.log(req.body)
+  const valid = DeleteDraftSchema(req.body)
+  if (!valid) {
+    return res.status(400).json("Invalid payload")
+  }
+  const author = req.body.author
+  const user = await User.findById(req.session.user?.user_id)
+  if (!user) {
+    return res.status(400).json("You are not authorized for this action")
+  }
+  if (user?._id.toString() !== author.user_id) {
+    console.log("user and author are not the same person")
+    return res.status(400).json("You are not authorized for this action")
+  }
+  const deletedBlog = await Blog.deleteOne({ blog_id: req.body.blog_id })
+  console.log(deletedBlog)
+  res.status(200).json("success")
 }
