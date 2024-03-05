@@ -1,5 +1,5 @@
 import AnimationWrapper from "../../common/animation";
-import defaultBanner from "../../assets/blog banner.png";
+import defaultBanner from "../../../images/blog banner.png";
 import axios, { AxiosError } from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import React, {
@@ -115,11 +115,12 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
   useEffect(() => {
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
-    if (bannerRef.current) {
-      bannerRef.current.src = blog.banner;
+    if (blog.banner !== "") {
+      if (bannerRef.current) {
+        bannerRef.current.src = blog.banner;
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blog.banner]);
+  }, [blog.banner, auth.user, setBlog]);
 
   return (
     <>

@@ -30,8 +30,10 @@ function AppComponent() {
         auth.login(response.data);
       }
     }
-    getUserSessionData();
-  }, []);
+    if (!auth.user) {
+      getUserSessionData();
+    }
+  }, [auth]);
 
   return (
     <Router>

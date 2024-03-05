@@ -83,7 +83,7 @@ const Signin = () => {
   };
 
   return auth.user !== undefined ? (
-    <Navigate to="/" />
+    <Navigate to="/editor" />
   ) : (
     <>
       <Navbar />

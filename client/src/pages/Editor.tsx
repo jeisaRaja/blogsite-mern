@@ -10,12 +10,12 @@ const Editor = () => {
   const auth = useUserContext();
   const [drafts, setDrafts] = useState<Array<BlogPost>>([]);
   const [fetched, setFetched] = useState(false);
-  const [draftsUpdated, setDraftsUpdated] = useState(false);
+  const [draftsUpdated, setDraftsUpdated] = useState(true);
 
   useEffect(() => {
-    console.log(draftsUpdated)
     const getDrafts = async () => {
       try {
+        console.log("this one?")
         const res = await axios.get(
           `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
           {
