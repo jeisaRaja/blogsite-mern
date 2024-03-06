@@ -58,30 +58,25 @@ export const saveDraft = async (req: Request, res: Response) => {
     return res.status(400).json({ msg: "The payload is invalid" })
   }
   const { title, banner, content, tags, des, author, draft } = req.body as BlogPost
-  const blogAuthor = await User.findById(req.session.user?.user_id)
-  if (!blogAuthor) {
-    return res.status(400).json({ message: "User does not exist in database" })
-  }
-  const drafts = await Blog.find({ author: blogAuthor, draft: true }).select('blog_id title banner content tags des draft').exec()
+  const drafts = await Blog.find({ author: req.user, draft: true }).select('blog_id title banner content tags des draft').exec()
   console.log("drafts length: ", drafts.length)
   if (drafts.length >= 5) {
     return res.status(400).json("Draft limit reached, maximum is 5.")
   }
   let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-') + nanoid(5)
   const newBlog = new Blog({
-    title, banner, content, tags, des, author: blogAuthor?._id, blog_id, draft: Boolean(draft)
+    title, banner, content, tags, des, author: req.user?._id, blog_id, draft: Boolean(draft)
   })
   await newBlog.save()
   res.status(200).json(newBlog._id)
 }
 
 export const getDrafts = async (req: Request, res: Response) => {
-  const user = await User.findById(req.session.user?.user_id)
-  const drafts = await Blog.find({ author: user, draft: true }).select('blog_id title banner content tags des draft').exec()
+  const drafts = await Blog.find({ author: req.user, draft: true }).select('blog_id title banner content tags des draft').exec()
   if (!drafts) {
     return res.status(200).json({ draft: 0 })
   }
-  const author = formatUserData(user!)
+  const author = formatUserData(req.user!)
   const draftsWithAuthor = drafts.map((draft) => {
     return { ...draft.toObject(), author }
   })
@@ -89,10 +84,9 @@ export const getDrafts = async (req: Request, res: Response) => {
 }
 
 export const updateDraft = async (req: Request, res: Response) => {
-  const user = await User.findById(req.session.user?.user_id)
   const { _id, blog_id, title, banner, content, tags, des, author, draft } = req.body as BlogPost
   console.log("Below is from update controller")
-  if (user?._id.toString() !== author.user_id) {
+  if (req.user?._id.toString() !== author.user_id) {
     console.log("user and author are not the same person")
     return res.status(400).json("You are not authorized to update this blog post")
   }
@@ -120,19 +114,14 @@ const DeleteDraftSchema = ajv.compile({
   required: ['author', 'blog_id'],
   additionalProperties: false
 })
+
 export const deleteDraft = async (req: Request, res: Response) => {
-  console.log("deleting a draft")
-  console.log(req.body)
   const valid = DeleteDraftSchema(req.body)
   if (!valid) {
     return res.status(400).json("Invalid payload")
   }
   const author = req.body.author
-  const user = await User.findById(req.session.user?.user_id)
-  if (!user) {
-    return res.status(400).json("You are not authorized for this action")
-  }
-  if (user?._id.toString() !== author.user_id) {
+  if (req.user?._id.toString() !== author.user_id) {
     console.log("user and author are not the same person")
     return res.status(400).json("You are not authorized for this action")
   }
@@ -140,3 +129,7 @@ export const deleteDraft = async (req: Request, res: Response) => {
   console.log(deletedBlog)
   res.status(200).json("success")
 }
+
+// export const publishDraft = async (req: Request, res: Response) => {
+//   const user = await User.findById(req.sess)
+// }

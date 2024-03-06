@@ -3,10 +3,8 @@ import 'dotenv/config'
 import User from "../Schema/User"
 import { formatUserData } from "../utils/formatUserData"
 import { nanoid } from "nanoid"
+import { RequestUser } from "../interfaces/interfaces"
 
-interface JwtPayload {
-  id: string
-}
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -18,6 +16,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     if (!user) {
       return res.status(400).json({ message: "Account not found" })
     }
+    req.user = user
     next()
   } catch (e) {
     console.error('Error checking signed-in status:', e);

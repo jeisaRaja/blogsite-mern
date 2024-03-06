@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import User, { UserSession } from './Schema/User';
+import User, { UserDocument, UserSession } from './Schema/User';
 import cors from 'cors';
 import admin from "firebase-admin";
 import * as fs from 'fs';
@@ -15,6 +15,7 @@ import { authRoutes } from './routes/authRoutes';
 import { isAuthenticated } from './middlewares/isAuthenticated';
 import editorRoutes from './routes/editorRoutes';
 import session = require('express-session');
+import blogsRouter from './routes/blogRoutes';
 
 const fileContent = fs.readFileSync('./service_account_firebase.json', 'utf-8');
 const serviceAccountKey = JSON.parse(fileContent);
@@ -49,6 +50,14 @@ declare module "express-session" {
   }
 }
 
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserDocument
+    }
+  }
+}
+
 server.use(session({
   secret: process.env.SESSION_SECRET!,
   cookie: {
@@ -73,7 +82,7 @@ server.listen(PORT, () => {
 
 server.use(authRoutes)
 server.use('/editor', editorRoutes)
-
+server.use('/blogs', blogsRouter)
 server.get('/test', (req, res) => {
   console.log(`request from ${req}`)
   console.log(req.headers)
