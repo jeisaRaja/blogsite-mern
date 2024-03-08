@@ -2,22 +2,13 @@ import AnimationWrapper from "../../common/animation";
 import defaultBanner from "../../../images/blog banner.png";
 import axios, { AxiosError } from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import React, {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-} from "react";
+import React, { ChangeEvent, useEffect, useRef } from "react";
 import { useUserContext } from "../../contexts/userContext";
 import { useEditorContext } from "../../contexts/editorContext";
 import { Tiptap } from "./TipTap";
 import AddTag from "./AddTag";
 
-interface BlogEditorProps {
-  setDraftsUpdated: Dispatch<SetStateAction<boolean>>;
-}
-const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
+const BlogEditor = () => {
   const bannerRef = useRef<HTMLImageElement>(null);
   const auth = useUserContext();
   const { blog, setBlog } = useEditorContext();
@@ -81,7 +72,6 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
   };
 
   const handleSaveDraft = async () => {
-    console.log(blog);
     try {
       if (!blog.title || blog.title.length < 10) {
         return toast.error("Title length must be at least 10 characters");
@@ -96,9 +86,38 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
       });
       if (res.status == 200) {
         toast.dismiss();
-        setDraftsUpdated(true);
         setBlog((prevBlog) => ({ ...prevBlog, _id: res.data }));
         toast.success("Blog Saved ✅");
+      }
+    } catch (e) {
+      toast.dismiss();
+      const axiosError = e as AxiosError;
+      const responseData = axiosError.response?.data;
+      if (typeof responseData === "string") {
+        toast.error(responseData);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
+  };
+
+  const handlePublish = async () => {
+    try {
+      if (!blog.title || blog.title.length < 10) {
+        return toast.error("Title length must be at least 10 characters");
+      }
+      toast.loading("Publishing...");
+      const method = blog._id === "" ? "POST" : "PUT";
+      const res = await axios({
+        withCredentials: true,
+        data: blog,
+        url: `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
+        method: method,
+      });
+      if (res.status == 200) {
+        toast.dismiss();
+        setBlog((prevBlog) => ({ ...prevBlog, _id: res.data }));
+        toast.success("Blog Published ✅");
       }
     } catch (e) {
       toast.dismiss();
@@ -120,13 +139,16 @@ const BlogEditor = ({ setDraftsUpdated }: BlogEditorProps) => {
         bannerRef.current.src = blog.banner;
       }
     }
-  }, [blog.banner, auth.user, setBlog]);
+  }, [blog.banner, auth.user, setBlog, blog.title, blog.content]);
 
   return (
     <>
       <nav className="navbar">
         <div className="flex gap-4 mx-auto p-10 max-w-[900px]">
-          <button className="p-2 w-[6rem] bg-gray-900 text-white rounded-md hover:bg-gray-700">
+          <button
+            className="p-2 w-[6rem] bg-gray-900 text-white rounded-md hover:bg-gray-700"
+            onClick={handlePublish}
+          >
             Publish
           </button>
           <button

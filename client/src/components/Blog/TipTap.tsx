@@ -42,10 +42,11 @@ export const Tiptap = () => {
   });
 
   useEffect(() => {
-    if (loadDraftClicked) {
-      console.log("a draft clicked");
-      editor?.commands.setContent(blog.content);
-      setLoadDraftClicked(false);
+    if (editor !== null) {
+      if (loadDraftClicked) {
+        editor?.commands.setContent(blog.content);
+        setLoadDraftClicked(false);
+      }
     }
   }, [blog.content, editor, loadDraftClicked, setLoadDraftClicked]);
 

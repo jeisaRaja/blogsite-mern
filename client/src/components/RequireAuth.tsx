@@ -1,6 +1,7 @@
 import { useUserContext } from "../contexts/userContext";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 interface RequireAuthProps {
   children: React.ReactNode;
@@ -39,6 +40,5 @@ export const RequireAuth = ({ children }: RequireAuthProps) => {
     return <h1>Loading...</h1>;
   }
 
-  console.log("auth.user:", auth.user);
-  return auth.user !== undefined ? children : <h1>Please log in</h1>;
+  return auth.user !== undefined ? children : <Navigate to="/signin" />;
 };

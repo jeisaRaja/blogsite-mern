@@ -1,5 +1,4 @@
-import jwt from 'jsonwebtoken'
-import { UserDocument, UserSession } from '../Schema/User';
+import { UserDocument } from '../Schema/User';
 
 export const formatUserData = (user: UserDocument) => {
   return (

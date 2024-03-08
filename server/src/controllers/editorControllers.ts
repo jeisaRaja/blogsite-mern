@@ -8,7 +8,7 @@ import { auth } from "firebase-admin";
 
 const ajv = new Ajv()
 
-interface BlogPost {
+export interface BlogPost {
   _id: string;
   blog_id: string;
   title: string;
@@ -59,9 +59,8 @@ export const saveDraft = async (req: Request, res: Response) => {
   }
   const { title, banner, content, tags, des, author, draft } = req.body as BlogPost
   const drafts = await Blog.find({ author: req.user, draft: true }).select('blog_id title banner content tags des draft').exec()
-  console.log("drafts length: ", drafts.length)
-  if (drafts.length >= 5) {
-    return res.status(400).json("Draft limit reached, maximum is 5.")
+  if (drafts.length >= 4) {
+    return res.status(400).json("Draft limit reached, maximum is 4.")
   }
   let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-') + nanoid(5)
   const newBlog = new Blog({
@@ -85,7 +84,6 @@ export const getDrafts = async (req: Request, res: Response) => {
 
 export const updateDraft = async (req: Request, res: Response) => {
   const { _id, blog_id, title, banner, content, tags, des, author, draft } = req.body as BlogPost
-  console.log("Below is from update controller")
   if (req.user?._id.toString() !== author.user_id) {
     console.log("user and author are not the same person")
     return res.status(400).json("You are not authorized to update this blog post")
@@ -130,6 +128,18 @@ export const deleteDraft = async (req: Request, res: Response) => {
   res.status(200).json("success")
 }
 
-// export const publishDraft = async (req: Request, res: Response) => {
-//   const user = await User.findById(req.sess)
-// }
+export const publishDraft = async (req: Request, res: Response) => {
+  const valid = BlogSchema(req.body)
+  if (!valid) {
+    return res.status(400).json("payload invalid")
+  }
+  const { _id, title, banner, content, tags, des, draft } = req.body as BlogPost
+  if (!_id) {
+    let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-') + nanoid(5)
+    const newBlog = new Blog({
+      title, banner, content, tags, des, author: req.user?._id, blog_id, draft: Boolean(draft)
+    })
+    await newBlog.save()
+    res.status(200).json(newBlog._id)
+  }
+}

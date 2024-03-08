@@ -7,11 +7,15 @@ import { UserContextProvider, useUserContext } from "./contexts/userContext";
 import { RequireAuth } from "./components/RequireAuth";
 import { useEffect } from "react";
 import axios from "axios";
+import Dashboard from "./pages/Dashboard";
+import { EditorContextProvider } from "./contexts/editorContext";
 
 function App() {
   return (
     <UserContextProvider>
-      <AppComponent />
+      <EditorContextProvider>
+        <AppComponent />
+      </EditorContextProvider>
     </UserContextProvider>
   );
 }
@@ -46,6 +50,14 @@ function AppComponent() {
           element={
             <RequireAuth>
               <EditorPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <RequireAuth>
+              <Dashboard />
             </RequireAuth>
           }
         />
