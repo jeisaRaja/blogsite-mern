@@ -11,7 +11,7 @@ const Dashboard = () => {
     const getDrafts = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
+          `${import.meta.env.VITE_API_ROUTE}/editor`,
           {
             withCredentials: true,
           }

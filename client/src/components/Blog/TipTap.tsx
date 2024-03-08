@@ -10,12 +10,15 @@ import Typography from "@tiptap/extension-typography";
 import Youtube from "@tiptap/extension-youtube";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEditorContext } from "../../contexts/editorContext";
+import { useLocation } from "react-router-dom";
 
 export const Tiptap = () => {
   const [linkModal, setLinkModal] = useState(false);
-  const { blog, setBlog, loadDraftClicked, setLoadDraftClicked } =
+  const { blog, setBlog } =
     useEditorContext();
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isLoadQueryParamPresent = queryParams.get("load") === "true";
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -43,12 +46,11 @@ export const Tiptap = () => {
 
   useEffect(() => {
     if (editor !== null) {
-      if (loadDraftClicked) {
+      if (isLoadQueryParamPresent) {
         editor?.commands.setContent(blog.content);
-        setLoadDraftClicked(false);
       }
     }
-  }, [blog.content, editor, loadDraftClicked, setLoadDraftClicked]);
+  }, [blog.content, editor, isLoadQueryParamPresent]);
 
   return (
     <div className="w-full">
