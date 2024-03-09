@@ -5,7 +5,7 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import MenuBar from "./MenuBar";
 import AddLinkBox from "./AddLinkModal";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Typography from "@tiptap/extension-typography";
 import Youtube from "@tiptap/extension-youtube";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -14,8 +14,9 @@ import { useLocation } from "react-router-dom";
 
 export const Tiptap = () => {
   const [linkModal, setLinkModal] = useState(false);
-  const { blog, setBlog } =
-    useEditorContext();
+  const { blog, setBlog } = useEditorContext();
+  const [isContentInitialized, setIsContentInitialized] = useState(false);
+  const blogContentRef = useRef(blog.content);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const isLoadQueryParamPresent = queryParams.get("load") === "true";
@@ -45,12 +46,24 @@ export const Tiptap = () => {
   });
 
   useEffect(() => {
-    if (editor !== null) {
-      if (isLoadQueryParamPresent) {
-        editor?.commands.setContent(blog.content);
-      }
+    console.log("content", blog.content);
+    blogContentRef.current = blog.content;
+  }, [blog.content]);
+
+  useEffect(() => {
+    if (!isContentInitialized && editor !== null && isLoadQueryParamPresent) {
+      editor?.commands.setContent(blogContentRef.current);
+      setIsContentInitialized(true); // Mark as initialized
+    } else if (blog.content === "" && !isLoadQueryParamPresent) {
+      editor?.commands.setContent(blogContentRef.current);
     }
-  }, [blog.content, editor, isLoadQueryParamPresent]);
+  }, [
+    editor,
+    isLoadQueryParamPresent,
+    location.pathname,
+    blog.content,
+    isContentInitialized,
+  ]);
 
   return (
     <div className="w-full">

@@ -12,8 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const BlogEditor = () => {
   const bannerRef = useRef<HTMLImageElement>(null);
   const auth = useUserContext();
-  const { blog, setBlog, loadDraftClicked, setLoadDraftClicked, setTags } =
-    useEditorContext();
+  const { blog, setBlog, setTags } = useEditorContext();
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -166,11 +165,16 @@ const BlogEditor = () => {
   }, [isLoadQueryParamPresent, setBlog, setTags]);
 
   useEffect(() => {
+    console.log(blog.content);
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
     if (blog.banner !== "") {
       if (bannerRef.current) {
         bannerRef.current.src = blog.banner;
+      }
+    } else if (blog.banner === "") {
+      if (bannerRef.current) {
+        bannerRef.current.src = defaultBanner;
       }
     }
   }, [
@@ -180,9 +184,8 @@ const BlogEditor = () => {
     blog.title,
     blog.content,
     blog.tags,
-    loadDraftClicked,
-    setLoadDraftClicked,
     setTags,
+    isLoadQueryParamPresent,
   ]);
 
   return (
