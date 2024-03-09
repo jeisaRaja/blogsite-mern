@@ -163,23 +163,15 @@ const BlogEditor = () => {
       setBlog(dummyBlogPost);
       setTags([]);
     }
+  }, [isLoadQueryParamPresent, setBlog, setTags]);
+
+  useEffect(() => {
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
     if (blog.banner !== "") {
       if (bannerRef.current) {
         bannerRef.current.src = blog.banner;
       }
-    }
-    if (
-      blog.title !== "" &&
-      blog.tags.length > 0 &&
-      blog.content !== "" &&
-      loadDraftClicked
-    ) {
-      console.log(blog.title);
-      console.log(blog.tags);
-      console.log(blog.content);
-      setLoadDraftClicked(false);
     }
   }, [
     blog.banner,

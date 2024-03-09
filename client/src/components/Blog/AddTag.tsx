@@ -1,5 +1,6 @@
 import { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
 import { useEditorContext } from "../../contexts/editorContext";
+import toast from "react-hot-toast";
 
 const AddTag = () => {
   const [input, setInput] = useState("");
@@ -12,7 +13,10 @@ const AddTag = () => {
   }
 
   function handleEnterTag(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key == "Enter" && input.trim() !== "") {
+    if (e.key !== "Enter") {
+      return;
+    }
+    if (input.trim() !== "" && !tags.includes(input)) {
       setTags([...tags, input.trim()]);
       setBlog((prevBlog) => ({
         ...prevBlog,
@@ -22,6 +26,9 @@ const AddTag = () => {
       if (ref.current) {
         ref.current.value = "";
       }
+    } else if (tags.includes(input)) {
+      toast.error("Redundant tag");
+      return;
     }
   }
 
