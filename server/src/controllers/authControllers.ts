@@ -4,7 +4,9 @@ import { formatUserData } from '../utils/formatUserData';
 import bcrypt from 'bcrypt'
 import { generateUsername } from '../utils/generateUsername';
 import { getAuth } from 'firebase-admin/auth';
-import { nanoid } from 'nanoid';
+import Ajv from 'ajv';
+
+const ajv = new Ajv()
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
@@ -17,20 +19,34 @@ export const isSignedIn = async (req: Request, res: Response) => {
   return res.status(200).json(formatUserData(user))
 }
 
+const signInSchema = ajv.compile({
+  type: "object",
+  properties: {
+    email: { type: "string" },
+    password: { type: "string" },
+  },
+  required: ["email", "password"],
+  additionalProperties: false
+})
+
 export const signIn = async (req: Request, res: Response) => {
+  const valid = signInSchema(req.body.requestData)
+  if (!valid){
+    return res.status(400).json("Invalid data")
+  }
   let { email, password } = req.body.requestData as { email: string, password: string };
 
   const user: UserDocument | null = await User.findOne({ "personal_info.email": email });
 
   if (!user) {
-    return res.status(400).json({ "error": "email or password is incorrect" });
+    return res.status(401).json({ "error": "email or password is incorrect" });
   }
   if (user.google_auth) {
-    return res.status(403).json({ "error": "Please log in using your google account" })
+    return res.status(401).json({ "error": "Please log in using your google account" })
   }
   const isPasswordCorrect: boolean = bcrypt.compareSync(password, user.personal_info.password);
   if (!isPasswordCorrect) {
-    return res.status(403).json({ "error": "email or password is incorrect" })
+    return res.status(401).json({ "error": "email or password is incorrect" })
   }
   req.session.user = {
     user_id: user._id, email: user.personal_info.email
@@ -61,7 +77,6 @@ export const signUp = async (req: Request, res: Response) => {
     let user: UserDocument = new User({
       personal_info: { fullname, email, password: hashedPassword, username }
     })
-
     user.save().then((u) => {
       req.session.user = {
         user_id: user._id, email: user.personal_info.email
@@ -83,7 +98,7 @@ export const signOut = async (req: Request, res: Response) => {
       return res.status(500).send("Internal server error")
     }
   })
-  res.status(200).json({message: "session destroyed"})
+  res.status(200).json({ message: "session destroyed" })
 
 }
 export const googleAuth = async (req: Request, res: Response): Promise<void> => {
