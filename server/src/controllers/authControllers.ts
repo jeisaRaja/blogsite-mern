@@ -31,7 +31,7 @@ const signInSchema = ajv.compile({
 
 export const signIn = async (req: Request, res: Response) => {
   const valid = signInSchema(req.body.requestData)
-  if (!valid){
+  if (!valid) {
     return res.status(400).json("Invalid data")
   }
   let { email, password } = req.body.requestData as { email: string, password: string };
@@ -54,22 +54,44 @@ export const signIn = async (req: Request, res: Response) => {
   res.status(200).json(formatUserData(user));
 }
 
+
+const signUpSchema = ajv.compile(
+  {
+    type: "object",
+    properties: {
+      fullname: { type: "string" },
+      email: { type: "string" },
+      password: { type: "string" },
+      passwordRepeat: { type: "string" },
+    },
+    required: ['fullname', 'email', 'password', 'passwordRepeat'],
+    additionalProperties: false
+  }
+)
 export const signUp = async (req: Request, res: Response) => {
-  const { fullname = '', email = '', password = '' } = req.body.requestData as { fullname: string, email: string, password: string };
+  const valid = signUpSchema(req.body.requestData)
+  if (!valid) {
+    return res.status(400).json("Invalid data")
+  }
+  const { fullname, email, password, passwordRepeat } = req.body.requestData as { fullname: string, email: string, password: string, passwordRepeat: string };
   if (fullname.length < 3) {
-    return res.status(403).json({ "error": "Fullname must be at least 3 letters" });
+    return res.status(400).json({ "error": "Fullname must be at least 3 letters" });
   }
 
   if (!email.length) {
-    return res.status(403).json({ "error": "Email must be provided" });
+    return res.status(400).json({ "error": "Email must be provided" });
   }
 
   if (!emailRegex.test(email)) {
-    return res.status(403).json({ "error": "Email is invalid" })
+    return res.status(400).json({ "error": "Email is invalid" })
   }
 
   if (!passwordRegex.test(password)) {
-    return res.status(403).json({ "error": "Password should be 6 to 20 characters long with a numeric, 1 lowercase" })
+    return res.status(400).json({ "error": "Password should be 6 to 20 characters long with a numeric, 1 lowercase" })
+  }
+
+  if (password !== passwordRepeat) {
+    return res.status(400).json({ "error": "Password and repeat password is different" })
   }
 
   bcrypt.hash(password, 10, async (err, hashedPassword) => {

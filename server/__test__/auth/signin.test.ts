@@ -1,9 +1,9 @@
 import mongoose, { mongo } from "mongoose"
 import User from "../../src/Schema/User"
 import { MongoMemoryServer } from "mongodb-memory-server"
-import { postRequest } from "../utils"
 import request from "supertest";
 import server from "../../src/server";
+
 const populateUser = async () => {
 
   const password = "$2b$10$ssyJR.fY/1zXaO70jILLu.QMrESTLbvUBsTTuHDw.fUeEgyjiHK1i"
@@ -34,21 +34,25 @@ describe('signin route', () => {
     const res = await request(server).post('/signin').send({ requestData: { email: "agusbudiman@gmail.com", password: "Cipinang01" } })
     expect(res.status).toBe(200);
   })
-  it('wrong password', async ()=>{
+  it('wrong password', async () => {
     const res = await request(server).post('/signin').send({ requestData: { email: "agusbudiman@gmail.com", password: "Cipinang56" } })
     expect(res.status).toBe(401);
   })
-  it('empty password', async ()=>{
+  it('empty password', async () => {
     const res = await request(server).post('/signin').send({ requestData: { email: "agusbudiman@gmail.com" } })
     expect(res.status).toBe(400);
   })
-  it('empty email', async ()=>{
+  it('empty email', async () => {
     const res = await request(server).post('/signin').send({ requestData: { password: "Cipinang56" } })
     expect(res.status).toBe(400);
   })
-  it('account did not exist', async ()=>{
+  it('account did not exist', async () => {
     const res = await request(server).post('/signin').send({ requestData: { email: "nomail@gmail.com", password: "Cipinang56" } })
     expect(res.status).toBe(401);
+  })
+  it('not using the correct requestData', async () => {
+    const res = await request(server).post('/signin').send({ email: "nomail@gmail.com", password: "Cipinang56" })
+    expect(res.status).toBe(400)
   })
 })
 
