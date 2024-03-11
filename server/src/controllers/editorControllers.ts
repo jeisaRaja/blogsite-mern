@@ -48,7 +48,7 @@ const BlogSchema = ajv.compile({
     },
     draft: { type: "boolean" }
   },
-  required: ['author', 'title'],
+  required: ['author', 'title', 'banner', 'content'],
   additionalProperties: false
 })
 
@@ -89,7 +89,6 @@ export const updateBlog = async (req: Request, res: Response) => {
     return res.status(400).json("You are not authorized to update this blog post")
   }
   const updatedBlog = await Blog.updateOne({ blog_id }, { title, banner, content, tags, des })
-  console.log(updatedBlog)
   res.status(200).json("Success")
 }
 
@@ -118,23 +117,29 @@ export const deleteBlog = async (req: Request, res: Response) => {
   if (!valid) {
     return res.status(400).json("Invalid payload")
   }
-  const deletedBlog = await Blog.findByIdAndDelete(req.body._id )
+  const deletedBlog = await Blog.findByIdAndDelete(req.body._id)
   console.log(deletedBlog)
-res.status(200).json("success")
+  res.status(200).json("success")
 }
 
 export const publishBlog = async (req: Request, res: Response) => {
   const valid = BlogSchema(req.body)
   if (!valid) {
-    return res.status(400).json("payload invalid")
+    return res.status(400).json("Request invalid")
   }
-  const { _id, title, banner, content, tags, des, draft } = req.body as BlogPost
+  const { _id, title, banner, content, tags, des } = req.body as BlogPost
+  console.log(title)
   if (!_id) {
     let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-') + nanoid(5)
     const newBlog = new Blog({
-      title, banner, content, tags, des, author: req.user?._id, blog_id, draft: Boolean(draft)
+      title, banner, content, tags, des, author: req.user?._id, blog_id, draft: false
     })
     await newBlog.save()
-    res.status(200).json(newBlog._id)
+    res.status(200).json(blog_id)
   }
+  const blog = await Blog.findByIdAndUpdate(_id, { title, banner, content, tags, des, draft: false })
+  if (!blog) {
+    return res.status(400).json("blog doesn't exist")
+  }
+  res.status(200).json(blog.blog_id)
 }
