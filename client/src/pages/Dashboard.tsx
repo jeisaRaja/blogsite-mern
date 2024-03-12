@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import { BlogPost } from "../contexts/editorContext";
 import axios from "axios";
-import DraftList from "../components/Blog/DraftList";
+import DraftList from "../components/Editor/DraftList";
 
 const Dashboard = () => {
   const [drafts, setDrafts] = useState<Array<BlogPost>>([]);

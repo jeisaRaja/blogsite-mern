@@ -105,7 +105,7 @@ const BlogEditor = () => {
       }
     }
   };
-
+ 
   const handlePublish = async () => {
     try {
       if (!blog.title || blog.title.length < 10) {
@@ -116,7 +116,7 @@ const BlogEditor = () => {
       const res = await axios({
         withCredentials: true,
         data: blog,
-        url: `${import.meta.env.VITE_API_ROUTE}/editor`,
+        url: `${import.meta.env.VITE_API_ROUTE}/editor/publish`,
         method: method,
       });
       if (res.status == 200) {
@@ -126,6 +126,7 @@ const BlogEditor = () => {
       }
     } catch (e) {
       toast.dismiss();
+      console.log(e)
       const axiosError = e as AxiosError;
       const responseData = axiosError.response?.data;
       if (typeof responseData === "string") {

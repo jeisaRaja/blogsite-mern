@@ -8,14 +8,13 @@ interface DraftListProps {
 }
 const DraftList = ({ drafts }: DraftListProps) => {
   const navigate = useNavigate();
-  const { blog, setBlog, setTags, setLoadDraftClicked, loadDraftClicked } =
+  const { blog, setBlog, setTags, setLoadDraftClicked } =
     useEditorContext();
   const handleDraftClick = (i: number) => {
     const draft = drafts[i];
     setBlog(draft);
     setTags(draft.tags);
     setLoadDraftClicked(true);
-    console.log(loadDraftClicked, "dari draftlist");
     navigate("/editor?load=true", { state: [blog] });
   };
 

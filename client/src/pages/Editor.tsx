@@ -1,4 +1,4 @@
-import BlogEditor from "../components/Blog/BlogEditor";
+import BlogEditor from "../components/Editor/BlogEditor";
 import Navbar from "../components/Navbar/Navbar";
 
 const Editor = () => {
