@@ -7,7 +7,7 @@ export const isAuthor = async (req: Request, res: Response, next: NextFunction) 
   const blog = await Blog.findById(_id)
   if (req.user?._id.toString() !== blog?.author._id.toString()) {
     console.log("user and author are not the same person")
-    return res.status(400).json("You are not authorized to update this blog post")
+    return res.status(400).json("You are not the author this blog post")
   }
   next()
 }

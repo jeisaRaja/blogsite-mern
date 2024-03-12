@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import { BlogPost } from "../contexts/editorContext";
 import axios from "axios";
-import DraftList from "../components/Blog/DraftList";
+import DraftList from "../components/Editor/DraftList";
 
 const Dashboard = () => {
   const [drafts, setDrafts] = useState<Array<BlogPost>>([]);
@@ -11,7 +11,7 @@ const Dashboard = () => {
     const getDrafts = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_ROUTE}/editor/draft`,
+          `${import.meta.env.VITE_API_ROUTE}/editor`,
           {
             withCredentials: true,
           }

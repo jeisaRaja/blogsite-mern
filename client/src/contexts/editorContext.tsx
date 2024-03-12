@@ -44,7 +44,7 @@ interface EditorContextProviderProps {
   children: ReactNode;
 }
 
-const dummyBlogPost: BlogPost = {
+export const dummyBlogPost: BlogPost = {
   blog_id: "",
   _id: "",
   title: "",

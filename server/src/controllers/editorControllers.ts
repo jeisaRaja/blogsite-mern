@@ -48,11 +48,11 @@ const BlogSchema = ajv.compile({
     },
     draft: { type: "boolean" }
   },
-  required: ['author', 'title'],
+  required: ['author', 'title', 'banner', 'content'],
   additionalProperties: false
 })
 
-export const saveDraft = async (req: Request, res: Response) => {
+export const saveBlog = async (req: Request, res: Response) => {
   const valid = BlogSchema(req.body)
   if (!valid) {
     return res.status(400).json({ msg: "The payload is invalid" })
@@ -70,7 +70,7 @@ export const saveDraft = async (req: Request, res: Response) => {
   res.status(200).json(newBlog._id)
 }
 
-export const getDrafts = async (req: Request, res: Response) => {
+export const getBlogs = async (req: Request, res: Response) => {
   const drafts = await Blog.find({ author: req.user, draft: true }).select('blog_id title banner content tags des draft').exec()
   if (!drafts) {
     return res.status(200).json({ draft: 0 })
@@ -82,21 +82,20 @@ export const getDrafts = async (req: Request, res: Response) => {
   res.status(200).json(draftsWithAuthor)
 }
 
-export const updateDraft = async (req: Request, res: Response) => {
+export const updateBlog = async (req: Request, res: Response) => {
   const { _id, blog_id, title, banner, content, tags, des, author, draft } = req.body as BlogPost
   if (req.user?._id.toString() !== author.user_id) {
     console.log("user and author are not the same person")
     return res.status(400).json("You are not authorized to update this blog post")
   }
   const updatedBlog = await Blog.updateOne({ blog_id }, { title, banner, content, tags, des })
-  console.log(updatedBlog)
   res.status(200).json("Success")
 }
 
 const DeleteDraftSchema = ajv.compile({
   type: "object",
   properties: {
-    blog_id: { type: "string" },
+    _id: { type: "string" },
     author: {
       type: "object",
       properties: {
@@ -107,39 +106,40 @@ const DeleteDraftSchema = ajv.compile({
         username: { type: "string" }
       }
     },
-    draft: { type: "boolean" }
   },
-  required: ['author', 'blog_id'],
+  required: ['author', '_id'],
   additionalProperties: false
 })
 
-export const deleteDraft = async (req: Request, res: Response) => {
+export const deleteBlog = async (req: Request, res: Response) => {
+  console.log(req.body)
   const valid = DeleteDraftSchema(req.body)
   if (!valid) {
     return res.status(400).json("Invalid payload")
   }
-  const author = req.body.author
-  if (req.user?._id.toString() !== author.user_id) {
-    console.log("user and author are not the same person")
-    return res.status(400).json("You are not authorized for this action")
-  }
-  const deletedBlog = await Blog.deleteOne({ blog_id: req.body.blog_id })
+  const deletedBlog = await Blog.findByIdAndDelete(req.body._id)
   console.log(deletedBlog)
   res.status(200).json("success")
 }
 
-export const publishDraft = async (req: Request, res: Response) => {
+export const publishBlog = async (req: Request, res: Response) => {
   const valid = BlogSchema(req.body)
   if (!valid) {
-    return res.status(400).json("payload invalid")
+    return res.status(400).json("Request invalid")
   }
-  const { _id, title, banner, content, tags, des, draft } = req.body as BlogPost
+  const { _id, title, banner, content, tags, des } = req.body as BlogPost
+  console.log(title)
   if (!_id) {
     let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-') + nanoid(5)
     const newBlog = new Blog({
-      title, banner, content, tags, des, author: req.user?._id, blog_id, draft: Boolean(draft)
+      title, banner, content, tags, des, author: req.user?._id, blog_id, draft: false
     })
     await newBlog.save()
-    res.status(200).json(newBlog._id)
+    res.status(200).json(blog_id)
   }
+  const blog = await Blog.findByIdAndUpdate(_id, { title, banner, content, tags, des, draft: false })
+  if (!blog) {
+    return res.status(400).json("blog doesn't exist")
+  }
+  res.status(200).json(blog.blog_id)
 }

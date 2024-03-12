@@ -5,17 +5,21 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import MenuBar from "./MenuBar";
 import AddLinkBox from "./AddLinkModal";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Typography from "@tiptap/extension-typography";
 import Youtube from "@tiptap/extension-youtube";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEditorContext } from "../../contexts/editorContext";
+import { useLocation } from "react-router-dom";
 
 export const Tiptap = () => {
   const [linkModal, setLinkModal] = useState(false);
-  const { blog, setBlog, loadDraftClicked, setLoadDraftClicked } =
-    useEditorContext();
-
+  const { blog, setBlog } = useEditorContext();
+  const [isContentInitialized, setIsContentInitialized] = useState(false);
+  const blogContentRef = useRef(blog.content);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isLoadQueryParamPresent = queryParams.get("load") === "true";
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -42,13 +46,24 @@ export const Tiptap = () => {
   });
 
   useEffect(() => {
-    if (editor !== null) {
-      if (loadDraftClicked) {
-        editor?.commands.setContent(blog.content);
-        setLoadDraftClicked(false);
-      }
+    console.log("content", blog.content);
+    blogContentRef.current = blog.content;
+  }, [blog.content]);
+
+  useEffect(() => {
+    if (!isContentInitialized && editor !== null && isLoadQueryParamPresent) {
+      editor?.commands.setContent(blogContentRef.current);
+      setIsContentInitialized(true); // Mark as initialized
+    } else if (blog.content === "" && !isLoadQueryParamPresent) {
+      editor?.commands.setContent(blogContentRef.current);
     }
-  }, [blog.content, editor, loadDraftClicked, setLoadDraftClicked]);
+  }, [
+    editor,
+    isLoadQueryParamPresent,
+    location.pathname,
+    blog.content,
+    isContentInitialized,
+  ]);
 
   return (
     <div className="w-full">

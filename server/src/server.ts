@@ -20,21 +20,8 @@ import blogsRouter from './routes/blogRoutes';
 const fileContent = fs.readFileSync('./service_account_firebase.json', 'utf-8');
 const serviceAccountKey = JSON.parse(fileContent);
 
-const connectionString: string = process.env.DB_STRING || '';
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
-mongoose.connect(connectionString, {
-  autoIndex: true,
-});
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
 
 const server = express();
 server.use(express.json());
@@ -73,12 +60,6 @@ server.use(session({
 admin.initializeApp(
   { credential: admin.credential.cert(serviceAccountKey) }
 );
-
-const PORT: number = parseInt(process.env.PORT || '3000');
-
-server.listen(PORT, () => {
-  console.log(`Listening to PORT -> ${PORT}`);
-});
 
 server.use(authRoutes)
 server.use('/editor', editorRoutes)
@@ -128,3 +109,5 @@ server.post("/upload-image", isAuthenticated, upload.single('image'), async (req
     return res.status(500).json({ message: "Failed to upload image" })
   }
 })
+
+export default server
