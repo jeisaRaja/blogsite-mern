@@ -1,35 +1,43 @@
-import { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
-import { lookInSession } from "./common/session";
-import { UserContextProvider, useUserContext } from "./common/context";
 import EditorPage from "./pages/Editor";
+import { UserContextProvider, useUserContext } from "./contexts/userContext";
+import { RequireAuth } from "./components/RequireAuth";
+import { useEffect } from "react";
+import axios from "axios";
+import Dashboard from "./pages/Dashboard";
+import { EditorContextProvider } from "./contexts/editorContext";
 
 function App() {
-  // Move the context provider outside the useEffect
   return (
     <UserContextProvider>
-      <AppComponent />
+      <EditorContextProvider>
+        <AppComponent />
+      </EditorContextProvider>
     </UserContextProvider>
   );
 }
 
 function AppComponent() {
-  const { setUser } = useUserContext();
+  const auth = useUserContext();
   useEffect(() => {
-    const userFromSession = lookInSession("user") as string;
-    userFromSession
-      ? setUser(JSON.parse(userFromSession))
-      : setUser((prevUser) => ({
-          ...prevUser,
-          access_token: "",
-          username: prevUser?.username || "",
-          profile_img: prevUser?.profile_img || "",
-          fullname: prevUser?.fullname || "",
-        }));
-  }, [setUser]);
+    async function getUserSessionData() {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_ROUTE}/session`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200) {
+        auth.login(response.data);
+      }
+    }
+    if (!auth.user) {
+      getUserSessionData();
+    }
+  }, [auth]);
 
   return (
     <Router>
@@ -37,7 +45,22 @@ function AppComponent() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
-        <Route path="/editor" element={<EditorPage />} />
+        <Route
+          path="/editor"
+          element={
+            <RequireAuth>
+              <EditorPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <RequireAuth>
+              <Dashboard />
+            </RequireAuth>
+          }
+        />
       </Routes>
     </Router>
   );

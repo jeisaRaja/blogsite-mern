@@ -1,8 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-import User from './Schema/User';
+import User, { UserDocument, UserSession } from './Schema/User';
 import cors from 'cors';
 import admin from "firebase-admin";
 import * as fs from 'fs';
@@ -14,6 +13,9 @@ import { formatUserData } from './utils/formatUserData';
 import { UploadedFile } from './services/ImageStore';
 import { authRoutes } from './routes/authRoutes';
 import { isAuthenticated } from './middlewares/isAuthenticated';
+import editorRoutes from './routes/editorRoutes';
+import session = require('express-session');
+import blogsRouter from './routes/blogRoutes';
 
 const fileContent = fs.readFileSync('./service_account_firebase.json', 'utf-8');
 const serviceAccountKey = JSON.parse(fileContent);
@@ -36,7 +38,37 @@ db.once('open', () => {
 
 const server = express();
 server.use(express.json());
-server.use(cors());
+server.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: "PUT, POST, PATCH, DELETE, GET"
+}));
+
+declare module "express-session" {
+  interface SessionData {
+    user: UserSession;
+  }
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserDocument
+    }
+  }
+}
+
+server.use(session({
+  secret: process.env.SESSION_SECRET!,
+  cookie: {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: 'lax',
+    secure: false
+  },
+  resave: true,
+  saveUninitialized: false,
+}));
 
 admin.initializeApp(
   { credential: admin.credential.cert(serviceAccountKey) }
@@ -49,7 +81,8 @@ server.listen(PORT, () => {
 });
 
 server.use(authRoutes)
-
+server.use('/editor', editorRoutes)
+server.use('/blogs', blogsRouter)
 server.get('/test', (req, res) => {
   console.log(`request from ${req}`)
   console.log(req.headers)
@@ -74,7 +107,6 @@ server.post("/google-auth", async (req, res) => {
           await user.save()
         }
         else {
-          console.log(user)
           if (!user.google_auth) {
             return res.status(403).json({ "error": "This email was signed up without google, please use email and password to log in" })
           }
@@ -86,14 +118,13 @@ server.post("/google-auth", async (req, res) => {
     })
 })
 
-server.post("/upload-image",isAuthenticated, upload.single('image'), async (req, res) => {
+server.post("/upload-image", isAuthenticated, upload.single('image'), async (req, res) => {
   const bannerImage = req.file as UploadedFile
 
   try {
     let pathFromBucket = await uploadFile(bannerImage);
     return res.status(200).json({ publicUrl: pathFromBucket })
   } catch (e) {
-    console.log(e)
     return res.status(500).json({ message: "Failed to upload image" })
   }
 })

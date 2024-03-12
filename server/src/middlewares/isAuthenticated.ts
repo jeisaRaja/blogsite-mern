@@ -1,19 +1,25 @@
 import { Request, Response, NextFunction } from "express"
-import jwt from "jsonwebtoken"
 import 'dotenv/config'
+import User from "../Schema/User"
+import { formatUserData } from "../utils/formatUserData"
+import { nanoid } from "nanoid"
+import { RequestUser } from "../interfaces/interfaces"
 
-interface JwtPayload {
-  id: string
-}
 
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token: string | undefined = req.headers.authorization?.split(" ")[1];
-    const payload = jwt.verify(token!, process.env.JWT_PRIVATE!) as JwtPayload;
-    console.log(payload)
-    next();
-  } catch (error) {
-    console.error("Authentication failed:", error);
-    res.status(401).json({ message: "Authentication failed" });
+    if (!req.session.user) {
+      return res.status(400).json({ message: "Please sign in again" })
+    }
+    const id = req.session.user.user_id
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(400).json({ message: "Account not found" })
+    }
+    req.user = user
+    next()
+  } catch (e) {
+    console.error('Error checking signed-in status:', e);
+    res.status(500).json({ message: "Internal server error" });
   }
 }

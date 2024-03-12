@@ -4,9 +4,18 @@ import { formatUserData } from '../utils/formatUserData';
 import bcrypt from 'bcrypt'
 import { generateUsername } from '../utils/generateUsername';
 import { getAuth } from 'firebase-admin/auth';
+import { nanoid } from 'nanoid';
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
+export const isSignedIn = async (req: Request, res: Response) => {
+  const user = await User.findById(req.session.user?.user_id)
+  if (!user) {
+    return res.status(400).json({ message: "please sign in" })
+  }
+  return res.status(200).json(formatUserData(user))
+}
 
 export const signIn = async (req: Request, res: Response) => {
   let { email, password } = req.body.requestData as { email: string, password: string };
@@ -22,6 +31,9 @@ export const signIn = async (req: Request, res: Response) => {
   const isPasswordCorrect: boolean = bcrypt.compareSync(password, user.personal_info.password);
   if (!isPasswordCorrect) {
     return res.status(403).json({ "error": "email or password is incorrect" })
+  }
+  req.session.user = {
+    user_id: user._id, email: user.personal_info.email
   }
   res.status(200).json(formatUserData(user));
 }
@@ -51,6 +63,9 @@ export const signUp = async (req: Request, res: Response) => {
     })
 
     user.save().then((u) => {
+      req.session.user = {
+        user_id: user._id, email: user.personal_info.email
+      }
       return res.status(200).json(formatUserData(u))
     }).catch(e => {
       if (e.code == 11000) {
@@ -61,6 +76,16 @@ export const signUp = async (req: Request, res: Response) => {
   });
 }
 
+export const signOut = async (req: Request, res: Response) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err)
+      return res.status(500).send("Internal server error")
+    }
+  })
+  res.status(200).json({message: "session destroyed"})
+
+}
 export const googleAuth = async (req: Request, res: Response): Promise<void> => {
   try {
     const { access_token } = req.body.requestData as { access_token: string };
@@ -82,10 +107,13 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
       if (!user.google_auth) {
         res.status(403).json({ "error": "This email was signed up without Google. Please use email and password to log in." });
       } else {
+        req.session.user = {
+          user_id: user._id, email: user.personal_info.email
+        }
         res.status(200).json(formatUserData(user));
       }
     }
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Error in googleAuth:", error);
     res.status(500).json({ "error": error.message });
   }

@@ -1,50 +1,84 @@
 @import "@flaticon/flaticon-uicons/css/all/all";
 
 @tailwind base;
+
+@layer base {
+  h1 {
+    @apply text-3xl leading-normal;
+  }
+
+  h2 {
+    @apply text-xl leading-normal;
+  }
+
+  h3 {
+    @apply text-lg leading-normal;
+  }
+
+  img {
+    @apply rounded-md;
+  }
+
+  ol {
+    @apply list-decimal;
+  }
+
+  #textEditorContainer img {
+    @apply mt-5 mb-1 w-full;
+  }
+
+  #textEditorContainer p {
+    @apply cursor-text
+  }
+
+  #textEditorContainer ul {
+    @apply list-disc;
+  }
+
+  li {
+    @apply ml-8;
+  }
+
+  blockquote {
+    @apply text-sm text-gray-500 text-center my-2;
+  }
+
+  p {
+    @apply leading-snug;
+  }
+
+  iframe {
+    @apply aspect-video w-full h-auto mx-auto my-5
+  }
+
+  a i {
+    @apply w-4 h-4
+  }
+}
+
 @tailwind components;
 @tailwind utilities;
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	vertical-align: baseline;
-	font-family:'Poppins';
-	overflow-x: hidden;
+h1 a,
+h2 a,
+h3 a,
+p a {
+  cursor: pointer;
+  text-decoration: underline;
 }
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
+
+* {
+  line-height: normal;
 }
-body {
-	line-height: 1;
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: auto;
 }
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
+
+*{
+  box-sizing: border-box;
 }
