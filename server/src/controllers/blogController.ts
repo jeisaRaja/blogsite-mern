@@ -2,12 +2,14 @@ import { Request, Response } from "express";
 import Blog from "../Schema/Blog";
 
 // Get All Published Blog
-export const getAllBlogs = async (req: Request, res: Response) => {
+export const getRecentBlogs = async (req: Request, res: Response) => {
   const publishedBlogs = await Blog.find({ draft: false })
-  console.log(publishedBlogs)
+  
   res.status(200).json(publishedBlogs)
 }
 
+// /all/blogs
+// /category/blogs
 
 // Get One Blog Details
 

@@ -1,4 +1,26 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
+
+interface Activity {
+    total_likes: number;
+    total_comments: number;
+    total_reads: number;
+    total_parent_comments: number;
+}
+
+interface BlogDocument extends Document {
+    blog_id: string;
+    title: string;
+    banner?: string | null;
+    des?: string | null;
+    content?: string | null;
+    tags?: string[];
+    author: Types.ObjectId;
+    activity?: Activity;
+    comments?: Schema.Types.ObjectId[];
+    draft: boolean;
+    publishedAt: Date;
+    updatedAt: Date;
+}
 
 const blogSchema = new mongoose.Schema({
 
@@ -60,12 +82,13 @@ const blogSchema = new mongoose.Schema({
         default: false
     }
 
-}, 
-{ 
-    timestamps: {
-        createdAt: 'publishedAt'
-    } 
+},
+    {
+        timestamps: {
+            createdAt: 'publishedAt',
+            updatedAt: 'updatedAt'
+        }
 
-})
+    })
 
-export default mongoose.model("blogs", blogSchema);
+export default mongoose.model<BlogDocument>("blogs", blogSchema);
