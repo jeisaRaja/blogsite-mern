@@ -19,13 +19,13 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullname, setFullname] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
+  const [passwordRepeat, setpasswordRepeat] = useState("");
 
   interface SignUpData {
     email?: string;
     password?: string;
     fullname?: string;
-    repeatPassword?: string;
+    passwordRepeat?: string;
   }
 
   interface ExtendedSignUpData extends SignUpData {
@@ -55,15 +55,20 @@ const Signup = () => {
     if (fullname.length < 3) {
       return toast.error("Fullname must be at least 3 letters");
     }
-    if (!repeatPassword) {
+    if (!passwordRepeat) {
       return toast.error("Repeat password must be provided");
     }
-    if (repeatPassword !== password) {
+    if (passwordRepeat !== password) {
       return toast.error("Password and repeat password is different");
     }
 
-    const signinData = { email, password } as SignUpData;
-    sendAuthenticationRequest(`${apiRoute}/signin`, signinData);
+    const signUpData = {
+      email,
+      password,
+      fullname,
+      passwordRepeat,
+    } as SignUpData;
+    sendAuthenticationRequest(`${apiRoute}/signup`, signUpData);
   };
 
   const sendAuthenticationRequest = (
@@ -140,9 +145,9 @@ const Signup = () => {
                 type="password"
                 placeholder="Repeat your password"
                 className="py-3 px-3 rounded-md w-full bg-slate-100 border-2"
-                name="repeatPassword"
+                name="passwordRepeat"
                 onChange={(e) => {
-                  setRepeatPassword(e.target.value);
+                  setpasswordRepeat(e.target.value);
                 }}
               ></input>
             </div>
