@@ -127,15 +127,15 @@ export const publishBlog = async (req: Request, res: Response) => {
   if (!valid) {
     return res.status(400).json("Request invalid")
   }
-  const { _id, title, banner, content, tags, des } = req.body as BlogPost
-  console.log(title)
-  if (!_id) {
+  const { _id = '', title, banner, content, tags, des } = req.body as BlogPost
+  if (_id === '') {
+    console.log("inside here")
     let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, '-') + nanoid(5)
     const newBlog = new Blog({
       title, banner, content, tags, des, author: req.user?._id, blog_id, draft: false
     })
     await newBlog.save()
-    res.status(200).json(blog_id)
+    return res.status(200).json(blog_id)
   }
   const blog = await Blog.findByIdAndUpdate(_id, { title, banner, content, tags, des, draft: false })
   if (!blog) {
