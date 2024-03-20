@@ -21,22 +21,16 @@ const Home = () => {
       <Navbar />
       <div className="mx-auto p-12 max-w-[1400px]">
         <h3>Recent Blogs</h3>
-        <div className="grid grid-cols-3 gap-10">
+        <div className="flex flex-col">
           {blogs.map((blog) => {
             return (
               <div
                 key={blog.blog_id}
-                className="flex flex-col w-full border-solid border-gray-400 border relative max-h-[400px]"
+                className="flex flex-row w-full border-solid border-gray-100 border-y py-5 relative max-h-[400px] justify-between"
               >
-                <img
-                  src={blog.banner!}
-                  alt=""
-                  className="w-full rounded-none h-[50%] object-cover"
-                />
-                <div className="p-4">
-                  <h1 className="font-bold mb-2">{blog.title}</h1>
-                  <div className="flex flex-row gap-3 absolute bottom-4 left-4">
-                    {" "}
+                <div className="flex flex-col">
+                  <h3 className="font-bold mb-2">{blog.title}</h3>
+                  <div className="flex flex-row gap-3">
                     <img
                       src={blog.author.personal_info.profile_img}
                       alt=""
@@ -45,6 +39,11 @@ const Home = () => {
                     <p>{blog.author.personal_info.fullname}</p>
                   </div>
                 </div>
+                <img
+                  src={blog.banner!}
+                  alt=""
+                  className="rounded-none w-[100px] aspect-square object-cover"
+                />
               </div>
             );
           })}
