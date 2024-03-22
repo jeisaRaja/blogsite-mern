@@ -15,5 +15,17 @@ export const getRecentBlogs = async (req: Request, res: Response) => {
 // /category/blogs
 
 // Get One Blog Details
+export const getOneBlog = async (req: Request, res: Response) => {
+  const { blogId } = req.params
+  try {
+    const blog = await Blog.findOne({ blog_id: blogId })
+    if(!blog){
+      return res.json({data: "no blog found"})
+    }
+    return res.json(blog)
 
+  } catch (e) {
+    return res.json("blog not found")
+  }
+}
 // Get Blogs by filter

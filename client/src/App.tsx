@@ -9,6 +9,8 @@ import { useEffect } from "react";
 import axios from "axios";
 import Dashboard from "./pages/Dashboard";
 import { EditorContextProvider } from "./contexts/editorContext";
+import BlogPage from "./pages/BlogPage";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -61,6 +63,8 @@ function AppComponent() {
             </RequireAuth>
           }
         />
+        <Route path="/blog/:blogId" element={<BlogPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

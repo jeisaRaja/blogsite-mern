@@ -1,2 +1,6 @@
 ###
 GET  http://localhost:5000/blogs
+
+###
+GET  http://localhost:5000/blogs/asdasd
+ 
