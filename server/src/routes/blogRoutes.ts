@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { getAllBlogs } from "../controllers/blogController";
+import { getRecentBlogs } from "../controllers/blogController";
 
 const blogsRouter = Router()
 
-blogsRouter.route('/').get(getAllBlogs)
+blogsRouter.route('/')
+  .get(getRecentBlogs)
 export default blogsRouter
