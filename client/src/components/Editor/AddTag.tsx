@@ -42,16 +42,16 @@ const AddTag = () => {
   }
 
   return (
-    <div className="w-full flex flex-col gap-2 min-h-[100px] mb-[200px]">
+    <div className="w-full flex flex-col gap-2 mb-5">
       <input
         type="text"
-        className="border rounded-md border-gray-300 min-h-[50px] p-2"
+        className="border rounded-md border-gray-300 p-2"
         placeholder="Add tags"
         onChange={handleInputChange}
         onKeyDown={handleEnterTag}
         ref={ref}
       />
-      <div className="flex w-full mb-10 min-h-4 gap-2">
+      <div className="flex w-full min-h-5 gap-2">
         {tags.map((tag) => {
           return (
             <div

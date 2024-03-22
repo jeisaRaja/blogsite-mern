@@ -9,14 +9,14 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="w-full h-[100px] flex items-center justify-between py-5 px-[100px]">
+      <header className="w-full max-w-[1200px] mx-auto px-12 h-[100px] flex items-center justify-between py-5">
         <div className=""></div>
         <nav className="flex flex-row w-full">
           {auth.user ? (
             <div className="flex w-full items-center">
               <ul className="mr-auto">
                 <div className="py-1 cursor-pointer">
-                  <Link to='/' className="text-2xl font-semibold p-2">Sharify</Link>
+                  <Link to='/' className="text-2xl font-semibold py-2">Sharify</Link>
                 </div>
               </ul>
               <ul className="ml-auto">

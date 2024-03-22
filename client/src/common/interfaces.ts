@@ -7,7 +7,8 @@ export interface Activity {
 
 interface personal_info {
   fullname: string,
-  profile_img: string
+  profile_img: string,
+  email: string,
 }
 
 export interface Author {

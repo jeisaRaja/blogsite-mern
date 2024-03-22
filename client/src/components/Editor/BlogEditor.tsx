@@ -105,7 +105,7 @@ const BlogEditor = () => {
       }
     }
   };
- 
+
   const handlePublish = async () => {
     try {
       if (!blog.title || blog.title.length < 10) {
@@ -126,7 +126,7 @@ const BlogEditor = () => {
       }
     } catch (e) {
       toast.dismiss();
-      console.log(e)
+      console.log(e);
       const axiosError = e as AxiosError;
       const responseData = axiosError.response?.data;
       if (typeof responseData === "string") {
@@ -263,6 +263,13 @@ const BlogEditor = () => {
         >
           <Tiptap />
           <AddTag />
+          <textarea
+            placeholder="Describe the blog in 1 or 2 sentences"
+            className="w-full outline-none h-[80px] mb-[200px]"
+            onChange={handleEditorChange}
+            name="des"
+            value={blog.des}
+          ></textarea>
         </section>
       </AnimationWrapper>
     </>
