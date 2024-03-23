@@ -37,7 +37,7 @@ const Home = () => {
                         alt=""
                         className="w-5 h-5 inline-block mr-2"
                       />
-                      {blog.author.personal_info.email}
+                      {blog.author.personal_info.username}
                     </p>
                   </div>
                   <Link to={`blog/${blog.blog_id}`}><h3 className="font-bold hover:opacity-60">{blog.title}</h3></Link>

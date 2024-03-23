@@ -6,9 +6,10 @@ export interface Activity {
 }
 
 interface personal_info {
-  fullname: string,
+  fullname?: string,
   profile_img: string,
-  email: string,
+  email?: string,
+  username: string,
 }
 
 export interface Author {

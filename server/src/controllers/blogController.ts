@@ -5,7 +5,7 @@ import Blog from "../Schema/Blog";
 export const getRecentBlogs = async (req: Request, res: Response) => {
   const publishedBlogs = await Blog.find({ draft: false }).populate({
     path: "author",
-    select: "personal_info.fullname personal_info.email personal_info.profile_img"
+    select: "personal_info.username personal_info.email personal_info.profile_img"
   })
   const recentBlogs = publishedBlogs.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
   res.status(200).json(recentBlogs)
@@ -18,10 +18,15 @@ export const getRecentBlogs = async (req: Request, res: Response) => {
 export const getOneBlog = async (req: Request, res: Response) => {
   const { blogId } = req.params
   try {
-    const blog = await Blog.findOne({ blog_id: blogId })
+    const blog = await Blog.findOne({ blog_id: blogId }).populate({
+      path: 'author',
+      select: 'personal_info.username personal_info.profile_img'
+    })
     if(!blog){
       return res.json({data: "no blog found"})
     }
+    blog.activity!.total_reads += 1
+    await blog.save()
     return res.json(blog)
 
   } catch (e) {
