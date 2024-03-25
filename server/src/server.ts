@@ -38,13 +38,13 @@ declare module "express-session" {
   }
 }
 
-declare global {
-  namespace Express {
-    interface Request {
-      user: UserDocument
-    }
-  }
-}
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       user: UserDocument
+//     }
+//   }
+// }
 
 server.use(session({
   secret: process.env.SESSION_SECRET!,

@@ -12,7 +12,7 @@ let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for e
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
 export const isSignedIn = async (req: Request, res: Response) => {
-  const user = await User.findById(req.session.user?.user_id)
+  const user = await User.findById(req.session.user?._id)
   if (!user) {
     return res.status(400).json({ message: "please sign in" })
   }
@@ -49,7 +49,7 @@ export const signIn = async (req: Request, res: Response) => {
     return res.status(401).json({ "error": "email or password is incorrect" })
   }
   req.session.user = {
-    user_id: user._id, email: user.personal_info.email
+    _id: user._id, email: user.personal_info.email, profile_img: user.personal_info.profile_img, fullname: user.personal_info.fullname, username: user.personal_info.username
   }
   res.status(200).json(formatUserData(user));
 }
@@ -102,7 +102,7 @@ export const signUp = async (req: Request, res: Response) => {
     })
     user.save().then((u) => {
       req.session.user = {
-        user_id: user._id, email: user.personal_info.email
+        _id: user._id, email: user.personal_info.email, profile_img: user.personal_info.profile_img, fullname: user.personal_info.fullname, username: user.personal_info.username
       }
       return res.status(200).json(formatUserData(u))
     }).catch(e => {
@@ -146,7 +146,7 @@ export const googleAuth = async (req: Request, res: Response): Promise<void> => 
         res.status(403).json({ "error": "This email was signed up without Google. Please use email and password to log in." });
       } else {
         req.session.user = {
-          user_id: user._id, email: user.personal_info.email
+          _id: user._id, email: user.personal_info.email, profile_img: user.personal_info.profile_img, fullname: user.personal_info.fullname, username: user.personal_info.username
         }
         res.status(200).json(formatUserData(user));
       }

@@ -7,14 +7,19 @@ import Navbar from "../components/Navbar/Navbar";
 const BlogPage = () => {
   const { blogId } = useParams();
   const [blog, setBlog] = useState<null | BlogDocument>(null);
-  const [like, setLike] = useState(false)
+  const [like, setLike] = useState(false);
+
+  const toggleLike = async () => {
+    const api_route = `${import.meta.env.VITE_API_ROUTE}/blogs/like/id/${blogId}`;
+    const res = await axios.get(api_route, { withCredentials: true });
+  };
 
   useEffect(() => {
     const api_uri = `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}`;
     async function getBlogData() {
-      const res = await axios.get(api_uri);
-      setBlog(res.data);
-      console.log(res.data);
+      const res = await axios.get(api_uri, { withCredentials: true });
+      setBlog(res.data.blog);
+      console.log(res);
     }
     getBlogData();
   }, [blogId]);
@@ -44,7 +49,12 @@ const BlogPage = () => {
             <div className="flex w-full items-center border border-solid border-gray-400 rounded-md p-4 mb-[20px] gap-4">
               <div className="flex items-center gap-1">
                 <button className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
-                  <i className="fi fi-rr-heart"></i>
+                  <i
+                    onClick={toggleLike}
+                    className={
+                      "fi fi-rr-heart " + (like == true ? "text-red-600" : "")
+                    }
+                  ></i>
                 </button>
                 <p>{blog.activity?.total_likes}</p>
               </div>
