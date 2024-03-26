@@ -70,14 +70,44 @@ export const toggleLikeBlog = async (req: Request, res: Response) => {
         notification_for: blog.author._id
       }
       const notification = await Notification.create(notificationObj)
-
+      if (blog.activity && blog.activity.total_likes !== undefined) {
+        blog.activity.total_likes += 1;
+        await blog.save()
+      }
       return res.status(200).json({ success: "ok", notification })
     }
     await Notification.deleteOne({ _id: likeStatus._id });
+    if (blog.activity && blog.activity.total_likes !== undefined) {
+      blog.activity.total_likes -= 1;
+      await blog.save()
+    }
     return res.status(200).json({ success: "ok" })
   } catch (e) {
     const error: Error = e as Error
     console.log(error.name)
+    return res.status(400).json({ error: error.message })
+  }
+}
+
+export const getLike = async (req: Request, res: Response) => {
+  try {
+    const { blogId } = req.params
+    const blog = await Blog.findOne({ blog_id: blogId })
+    if (!blog) {
+      return res.status(400).json({ error: "blog not found" })
+    }
+    const user = await User.findById(req.session.user?._id)
+    if (!user) {
+      return res.status(400).json({ error: "user invalid" })
+    }
+    const likeStatus = await Notification.findOne({ type: 'like', blog: blog._id, user: user._id })
+    let like = false
+    if (likeStatus) {
+      like = true
+    }
+    res.status(200).json({ like })
+  } catch (e) {
+    const error: Error = e as Error
     return res.status(400).json({ error: error.message })
   }
 }

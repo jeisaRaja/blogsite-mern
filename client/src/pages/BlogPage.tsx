@@ -7,18 +7,30 @@ import Navbar from "../components/Navbar/Navbar";
 const BlogPage = () => {
   const { blogId } = useParams();
   const [blog, setBlog] = useState<null | BlogDocument>(null);
-  const [like, setLike] = useState(false);
+  const [like, setLike] = useState<boolean>(false);
+  const [likeCount, setLikeCount] = useState<number>(0);
 
   const toggleLike = async () => {
-    const api_route = `${import.meta.env.VITE_API_ROUTE}/blogs/like/id/${blogId}`;
-    const res = await axios.get(api_route, { withCredentials: true });
+    const api_route = `${
+      import.meta.env.VITE_API_ROUTE
+    }/blogs/like/id/${blogId}`;
+    const res = await axios.post(api_route, {}, { withCredentials: true });
+    console.log(res);
+    setLike(!like);
+    setLikeCount((prevCount) => (like ? prevCount - 1 : prevCount + 1));
   };
+
+  useEffect(() => {
+    console.log("like is ", like);
+  }, [like]);
 
   useEffect(() => {
     const api_uri = `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}`;
     async function getBlogData() {
       const res = await axios.get(api_uri, { withCredentials: true });
       setBlog(res.data.blog);
+      setLike(res.data.like);
+      setLikeCount(res.data.blog.activity?.total_likes || 0);
       console.log(res);
     }
     getBlogData();
@@ -48,15 +60,16 @@ const BlogPage = () => {
             </div>
             <div className="flex w-full items-center border border-solid border-gray-400 rounded-md p-4 mb-[20px] gap-4">
               <div className="flex items-center gap-1">
-                <button className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
-                  <i
-                    onClick={toggleLike}
-                    className={
-                      "fi fi-rr-heart " + (like == true ? "text-red-600" : "")
-                    }
-                  ></i>
+                <button
+                  className={
+                    "w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 " +
+                    (like == true ? "text-red-600 bg-red-100" : "")
+                  }
+                  onClick={toggleLike}
+                >
+                  <i className={"fi fi-rr-heart"}></i>
                 </button>
-                <p>{blog.activity?.total_likes}</p>
+                <p>{likeCount}</p>
               </div>
               <div className="flex items-center gap-1">
                 <button className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
