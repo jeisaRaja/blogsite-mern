@@ -6,4 +6,7 @@ GET  http://localhost:5000/blogs/id/In-this-blog-there-is-an-image-and-youtubekz
  
 
 ###
-GET http://localhost:5000/blogs/id/Marking-the-Web-s-35th-Birthday-An-Open-LetterezNNg
+GET http://localhost:5000/blogs/like/id/Marking-the-Web-s-35th-Birthday-An-Open-LetterezNNg
+
+###
+GET http://localhost:5000/editor/Marking-the-Web-s-35th-Birthday-An-Open-LetterezNNg

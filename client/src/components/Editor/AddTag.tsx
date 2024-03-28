@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useEditorContext } from "../../contexts/editorContext";
 import toast from "react-hot-toast";
 
@@ -41,8 +41,13 @@ const AddTag = () => {
     }));
   }
 
+  useEffect(() => {
+    console.log(tags);
+  }, [tags]);
+
   return (
     <div className="w-full flex flex-col gap-2 mb-5">
+      {tags}
       <input
         type="text"
         className="border rounded-md border-gray-300 p-2"

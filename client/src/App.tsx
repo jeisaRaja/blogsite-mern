@@ -48,6 +48,14 @@ function AppComponent() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route
+          path="/editor/:blogId"
+          element={
+            <RequireAuth>
+              <EditorPage />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/editor"
           element={
             <RequireAuth>

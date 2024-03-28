@@ -27,7 +27,7 @@ export const getOneBlog = async (req: Request, res: Response) => {
       select: 'personal_info.username personal_info.profile_img'
     })
     if (!blog) {
-      return res.json({ data: "no blog found" })
+      return res.status(400).json("blog not found")
     }
     blog.activity!.total_reads += 1
     await blog.save()
@@ -45,7 +45,7 @@ export const getOneBlog = async (req: Request, res: Response) => {
     }
     return res.json({ blog, like: true })
   } catch (e) {
-    return res.json("blog not found")
+    return res.status(400).json("blog not found")
   }
 }
 

@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { isAuthor } from "../middlewares/isAuthor";
-import { deleteBlog, getBlogs, publishBlog, saveBlog, updateBlog } from "../controllers/editorControllers";
+import { deleteBlog, getBlogEditorData, getBlogs, publishBlog, saveBlog, updateBlog } from "../controllers/editorControllers";
+import { isAuthorOfParams } from "../middlewares/isAuthorOfParams";
 
 const editorRoutes = Router()
 

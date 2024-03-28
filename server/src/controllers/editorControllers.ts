@@ -143,3 +143,13 @@ export const publishBlog = async (req: Request, res: Response) => {
   }
   res.status(200).json(blog.blog_id)
 }
+
+
+export const getBlogEditorData = async (req: Request, res: Response) => {
+  const blog = await Blog.findOne({blog_id: req.params.blogId}).select('blog_id title banner content tags des draft').exec()
+  if (!blog){
+    return res.status(200).json({ blog: 0 })
+  }
+  const author = req.session.user
+  res.status(200).json(blog)
+}

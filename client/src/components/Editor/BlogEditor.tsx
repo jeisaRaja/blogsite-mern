@@ -2,17 +2,20 @@ import AnimationWrapper from "../../common/animation";
 import defaultBanner from "../../../images/blog banner.png";
 import axios, { AxiosError } from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import React, { ChangeEvent, useEffect, useRef } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useUserContext } from "../../contexts/userContext";
 import { dummyBlogPost, useEditorContext } from "../../contexts/editorContext";
 import { Tiptap } from "./TipTap";
 import AddTag from "./AddTag";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const BlogEditor = () => {
+  const params = useParams();
+  const blog_id: string | undefined = params.blogId;
   const bannerRef = useRef<HTMLImageElement>(null);
   const auth = useUserContext();
   const { blog, setBlog, setTags } = useEditorContext();
+  const [fetched, setFetched] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -166,7 +169,19 @@ const BlogEditor = () => {
   }, [isLoadQueryParamPresent, setBlog, setTags]);
 
   useEffect(() => {
-    console.log(blog.content);
+    console.log('check')
+    const getBlogEditorData = async () => {
+      if (blog_id !== undefined) {
+        const api_route = `${
+          import.meta.env.VITE_API_ROUTE
+        }/blogs/id/${blog_id}`;
+        const res = await axios.get(api_route);
+        setBlog(res.data.blog);
+        setTags(res.data.blog.tags);
+      } else {
+        console.error("Blog ID is undefined");
+      }
+    };
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
     if (blog.banner !== "") {
@@ -178,6 +193,10 @@ const BlogEditor = () => {
         bannerRef.current.src = defaultBanner;
       }
     }
+    if (!fetched) {
+      getBlogEditorData();
+      setFetched(true);
+    }
   }, [
     blog.banner,
     auth.user,
@@ -185,8 +204,9 @@ const BlogEditor = () => {
     blog.title,
     blog.content,
     blog.tags,
+    blog_id,
+    fetched,
     setTags,
-    isLoadQueryParamPresent,
   ]);
 
   return (
