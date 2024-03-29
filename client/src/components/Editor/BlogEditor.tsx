@@ -116,9 +116,20 @@ const BlogEditor = () => {
       }
       toast.loading("Publishing...");
       const method = blog._id === "" ? "POST" : "PUT";
+      const cleanBlog = {
+        _id: blog._id,
+        blog_id: blog.blog_id,
+        title: blog.title,
+        banner: blog.banner,
+        des: blog.des,
+        content: blog.content,
+        tags: blog.tags,
+        draft: blog.draft,
+        author: blog.author,
+      };
       const res = await axios({
         withCredentials: true,
-        data: blog,
+        data: cleanBlog,
         url: `${import.meta.env.VITE_API_ROUTE}/editor/publish`,
         method: method,
       });
@@ -169,13 +180,17 @@ const BlogEditor = () => {
   }, [isLoadQueryParamPresent, setBlog, setTags]);
 
   useEffect(() => {
-    console.log('check')
+    console.log("check");
     const getBlogEditorData = async () => {
       if (blog_id !== undefined) {
         const api_route = `${
           import.meta.env.VITE_API_ROUTE
         }/blogs/id/${blog_id}`;
         const res = await axios.get(api_route);
+        console.log(res.data.blog.author, auth.user);
+        if (res.data.blog.author._id !== auth.user?.user_id) {
+          navigate("/");
+        }
         setBlog(res.data.blog);
         setTags(res.data.blog.tags);
       } else {
@@ -207,6 +222,7 @@ const BlogEditor = () => {
     blog_id,
     fetched,
     setTags,
+    navigate,
   ]);
 
   return (

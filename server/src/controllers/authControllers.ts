@@ -69,7 +69,6 @@ const signUpSchema = ajv.compile(
   }
 )
 export const signUp = async (req: Request, res: Response) => {
-  console.log(req.body.requestData)
   const valid = signUpSchema(req.body.requestData)
   if (!valid) {
     return res.status(400).json("Invalid data")

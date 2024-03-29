@@ -1,28 +1,27 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { BlogDocument } from "../common/interfaces";
 import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
+import { useUserContext } from "../contexts/userContext";
 
 const BlogPage = () => {
   const { blogId } = useParams();
   const [blog, setBlog] = useState<null | BlogDocument>(null);
   const [like, setLike] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(0);
+  const { user } = useUserContext();
 
   const toggleLike = async () => {
     const api_route = `${
       import.meta.env.VITE_API_ROUTE
     }/blogs/like/id/${blogId}`;
-    const res = await axios.post(api_route, {}, { withCredentials: true });
-    console.log(res);
+    await axios.post(api_route, {}, { withCredentials: true });
     setLike(!like);
     setLikeCount((prevCount) => (like ? prevCount - 1 : prevCount + 1));
   };
 
-  useEffect(() => {
-    console.log("like is ", like);
-  }, [like]);
+  useEffect(() => {}, [like]);
 
   useEffect(() => {
     const api_uri = `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}`;
@@ -77,6 +76,17 @@ const BlogPage = () => {
                 </button>
                 <p>{blog.activity?.total_comments}</p>
               </div>
+              {user?.user_id == blog.author._id ? (
+                <div className="flex items-center gap-1">
+                  <button className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
+                    <Link to={`/editor/${blog.blog_id}`}>
+                      <i className="fi fi-rr-pencil"></i>
+                    </Link>
+                  </button>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
             {blog.banner && (
               <img src={blog.banner} className="w-full mb-[50px]" alt="" />
@@ -88,6 +98,9 @@ const BlogPage = () => {
                 id="blogContent"
               ></div>
             )}
+            <div className="w-full min-h-10 mt-[100px] border-solid border-t-2 py-2">
+              <h3>Comments</h3>
+            </div>
           </>
         )}
       </div>

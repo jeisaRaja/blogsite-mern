@@ -112,13 +112,11 @@ const DeleteDraftSchema = ajv.compile({
 })
 
 export const deleteBlog = async (req: Request, res: Response) => {
-  console.log(req.body)
   const valid = DeleteDraftSchema(req.body)
   if (!valid) {
     return res.status(400).json("Invalid payload")
   }
   const deletedBlog = await Blog.findByIdAndDelete(req.body._id)
-  console.log(deletedBlog)
   res.status(200).json("success")
 }
 

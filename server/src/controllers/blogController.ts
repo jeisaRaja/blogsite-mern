@@ -3,6 +3,7 @@ import Blog from "../Schema/Blog";
 import User from "../Schema/User";
 import Notification, { INotification } from "../Schema/Notification";
 import Ajv from "ajv";
+import Comment from "../Schema/Comment";
 
 const ajv = new Ajv()
 // Get All Published Blog
@@ -53,7 +54,6 @@ export const toggleLikeBlog = async (req: Request, res: Response) => {
   try {
     const { blogId } = req.params
     const blog = await Blog.findOne({ blog_id: blogId })
-    console.log(blog)
     if (!blog) {
       return res.status(400).json({ error: "blog not found" })
     }
@@ -112,3 +112,44 @@ export const getLike = async (req: Request, res: Response) => {
   }
 }
 // Get Blogs by filter
+
+// Comment
+interface Comment {
+  blog_id: string;
+  blog_author: string;
+  comment: string;
+  children: string[];
+  commented_by: string;
+  isReply?: boolean;
+  parent?: string;
+}
+
+
+const validateCommentSchema = ajv.compile({
+  type: "object",
+  properties: {
+    blog_id: { type: "string" },
+    blog_author: { type: "string" },
+    comment: { type: "string" },
+    commented_by: { type: "string" },
+    isReply: { type: "boolean" },
+    parent: { type: "string" }
+  },
+  required: ["blog_id", "blog_author", "comment", "commented_by"],
+  additionalProperties: false // Ensures no additional properties are allowed
+})
+
+
+export const addComment = async (req: Request, res: Response) => {
+
+  if (!validateCommentSchema(req.body)) {
+    return res.json(400).json({ error: 'invalid input' })
+  }
+
+  try {
+    const comment = await Comment.create(req.body)
+    return res.status(200).json({ success: 'comment added' })
+  } catch (e) {
+    return res.status(500).json({ error: 'something went wrong' })
+  }
+}
