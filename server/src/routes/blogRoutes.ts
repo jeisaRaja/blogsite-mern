@@ -14,4 +14,7 @@ blogsRouter.route('/like/id/:blogId')
   .get(isAuthenticated, getLike)
   .post(isAuthenticated, toggleLikeBlog)
 
+blogsRouter.route('/comment/id/:blogId')
+  .post(isAuthenticated)
+
 export default blogsRouter

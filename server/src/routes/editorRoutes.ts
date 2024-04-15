@@ -16,4 +16,6 @@ editorRoutes.route('/publish')
   .post(isAuthenticated, publishBlog)
   .put(isAuthenticated, isAuthor, publishBlog)
 
+editorRoutes.route('/id/:blogId').get(isAuthenticated, isAuthorOfParams, getBlogEditorData)
+
 export default editorRoutes

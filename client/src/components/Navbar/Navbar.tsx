@@ -52,20 +52,16 @@ const Navbar = () => {
                   Sharify
                 </Link>
               </div>
-              <ul className="flex gap-3 ml-auto">
-                <li>
-                  <a href="/signin">
-                    <Button dark={true} type={undefined}>
-                      Sign In
-                    </Button>
-                  </a>
-                </li>
-                <li>
-                  <a href="/signup">
-                    <Button>Sign Up</Button>
-                  </a>
-                </li>
-              </ul>
+              <div className="flex ml-auto w-[200px] justify-end gap-2">
+                <a href="/signin">
+                  <Button dark={true} type={undefined}>
+                    Sign In
+                  </Button>
+                </a>
+                <a href="/signup">
+                  <Button>Sign Up</Button>
+                </a>
+              </div>
             </div>
           )}
         </nav>

@@ -3,8 +3,6 @@ import Blog from "../Schema/Blog";
 import User from "../Schema/User";
 import { nanoid } from "nanoid";
 import Ajv from "ajv";
-import { formatUserData } from "../utils/formatUserData";
-import { auth } from "firebase-admin";
 
 const ajv = new Ajv()
 
@@ -144,10 +142,11 @@ export const publishBlog = async (req: Request, res: Response) => {
 
 
 export const getBlogEditorData = async (req: Request, res: Response) => {
-  const blog = await Blog.findOne({blog_id: req.params.blogId}).select('blog_id title banner content tags des draft').exec()
-  if (!blog){
+  const blog = await Blog.findOne({ blog_id: req.params.blogId }).select('blog_id title banner content tags des draft author').exec()
+  if (!blog) {
     return res.status(200).json({ blog: 0 })
   }
   const author = req.session.user
-  res.status(200).json(blog)
+  res.status(200).json({ blog })
 }
+

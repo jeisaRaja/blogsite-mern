@@ -4,6 +4,7 @@ import { BlogDocument } from "../common/interfaces";
 import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
 import { useUserContext } from "../contexts/userContext";
+import CommentModal from "../components/Blogpost/CommentModal";
 
 const BlogPage = () => {
   const { blogId } = useParams();
@@ -11,7 +12,11 @@ const BlogPage = () => {
   const [like, setLike] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(0);
   const { user } = useUserContext();
+  const [commentModal, setCommentModal] = useState(false);
 
+  const toggleCommentModal = () => {
+    setCommentModal(!commentModal);
+  };
   const toggleLike = async () => {
     const api_route = `${
       import.meta.env.VITE_API_ROUTE
@@ -38,7 +43,12 @@ const BlogPage = () => {
   return (
     <>
       <Navbar />
-      <div className="mx-auto p-12 max-w-[1000px]">
+      <div
+        className={
+          "mx-auto p-12  " +
+          (commentModal ? " ml-auto mr-[30%] w-[50%]" : "w-[60%]")
+        }
+      >
         {blog && (
           <>
             <h1 className="font-bold text-5xl font-sans mb-[20px]">
@@ -71,18 +81,22 @@ const BlogPage = () => {
                 <p>{likeCount}</p>
               </div>
               <div className="flex items-center gap-1">
-                <button className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
+                <button
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100"
+                  onClick={toggleCommentModal}
+                >
                   <i className="fi fi-rs-comment-dots"></i>
                 </button>
                 <p>{blog.activity?.total_comments}</p>
               </div>
               {user?.user_id == blog.author._id ? (
                 <div className="flex items-center gap-1">
-                  <button className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100">
-                    <Link to={`/editor/${blog.blog_id}`}>
-                      <i className="fi fi-rr-pencil"></i>
-                    </Link>
-                  </button>
+                  <Link
+                    to={`/editor/${blog.blog_id}`}
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100"
+                  >
+                    <i className="fi fi-rr-pencil"></i>
+                  </Link>
                 </div>
               ) : (
                 ""
@@ -104,6 +118,7 @@ const BlogPage = () => {
           </>
         )}
       </div>
+      {commentModal && <CommentModal status={commentModal} toggleShow={setCommentModal}/>}
     </>
   );
 };

@@ -141,7 +141,6 @@ const validateCommentSchema = ajv.compile({
 
 
 export const addComment = async (req: Request, res: Response) => {
-
   if (!validateCommentSchema(req.body)) {
     return res.json(400).json({ error: 'invalid input' })
   }
