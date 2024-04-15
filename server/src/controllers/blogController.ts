@@ -147,7 +147,7 @@ export const addComment = async (req: Request, res: Response) => {
 
   try {
     const comment = await Comment.create(req.body)
-    return res.status(200).json({ success: 'comment added' })
+    return res.status(200).json({ success: 'comment added', comment })
   } catch (e) {
     return res.status(500).json({ error: 'something went wrong' })
   }
