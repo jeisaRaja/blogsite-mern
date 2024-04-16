@@ -1,5 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  FC,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 
 interface ShowBlogState {
   like: boolean;
@@ -23,15 +31,13 @@ interface BlogContextProviderProps {
 export const BlogContextProvider: FC<BlogContextProviderProps> = ({
   children,
 }) => {
-  const [like, setLike] = useState(false)
+  const [like, setLike] = useState(false);
   const value: ShowBlogState = {
     like,
-    setLike
+    setLike,
   };
 
-  return (
-    <BlogContext.Provider value={value}>{children}</BlogContext.Provider>
-  );
+  return <BlogContext.Provider value={value}>{children}</BlogContext.Provider>;
 };
 
-export default BlogContext
+export default BlogContext;

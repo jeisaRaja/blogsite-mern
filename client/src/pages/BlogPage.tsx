@@ -45,8 +45,10 @@ const BlogPage = () => {
       <Navbar />
       <div
         className={
-          "mx-auto p-12  " +
-          (commentModal ? " ml-auto mr-[30%] w-[50%]" : "w-[60%]")
+          "mx-auto p-8 md:p-12  " +
+          (commentModal
+            ? " ml-auto mr-[30%]  w-[90%] md:w-[50%]"
+            : " w-[90%] md:w-[60%]")
         }
       >
         {blog && (
@@ -118,7 +120,9 @@ const BlogPage = () => {
           </>
         )}
       </div>
-      {commentModal && <CommentModal status={commentModal} toggleShow={setCommentModal}/>}
+      {commentModal && (
+        <CommentModal status={commentModal} toggleShow={setCommentModal} />
+      )}
     </>
   );
 };
