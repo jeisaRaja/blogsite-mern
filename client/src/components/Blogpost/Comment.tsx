@@ -3,7 +3,13 @@ import { useUserContext } from "../../contexts/userContext";
 import CommentInput from "./CommentInput";
 import { Comment } from "../../common/interfaces";
 
-const CommentDiv = ({ comment }: { comment: Comment }) => {
+const CommentDiv = ({
+  comment,
+  onAddComment,
+}: {
+  comment: Comment;
+  onAddComment: (newComment: Comment) => void;
+}) => {
   const [input, setInput] = useState(false);
   const { user } = useUserContext();
   return (
@@ -38,7 +44,7 @@ const CommentDiv = ({ comment }: { comment: Comment }) => {
           ""
         )}
       </div>
-      {input ? <CommentInput /> : ""}
+      {input ? <CommentInput onAddComment={onAddComment} /> : ""}
     </div>
   );
 };

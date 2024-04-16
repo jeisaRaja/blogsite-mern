@@ -124,7 +124,7 @@ const BlogPage = () => {
         <CommentModal
           status={commentModal}
           toggleShow={setCommentModal}
-          comments={blog?.comments}
+          initialComments={blog?.comments}
         />
       )}
     </>

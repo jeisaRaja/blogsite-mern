@@ -168,8 +168,11 @@ export const addComment = async (req: Request, res: Response) => {
       blog.activity.total_comments += 1
     }
     await blog.save()
-
-    return res.status(200).json({ success: 'comment added', comment })
+    const populatedComment = await comment.populate({
+      path: 'commented_by',
+      select: "personal_info.username personal_info.email personal_info.profile_img"
+    })
+    return res.status(200).json({ success: 'comment added', comment: populatedComment })
   } catch (e) {
     console.log(e)
     return res.status(500).json({ error: 'something went wrong' })

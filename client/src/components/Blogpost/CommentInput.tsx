@@ -3,8 +3,13 @@ import { useUserContext } from "../../contexts/userContext";
 import { useParams } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import axios from "axios";
+import { Comment } from "../../common/interfaces";
 
-const CommentInput = () => {
+const CommentInput = ({
+  onAddComment,
+}: {
+  onAddComment: (newComment: Comment) => void;
+}) => {
   const params = useParams();
   const blogId = params.blogId;
   const { user } = useUserContext();
@@ -23,6 +28,7 @@ const CommentInput = () => {
       { withCredentials: true }
     );
     console.log(res);
+    onAddComment(res.data.comment);
   }
 
   return (

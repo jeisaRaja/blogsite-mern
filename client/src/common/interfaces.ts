@@ -26,7 +26,7 @@ export interface BlogDocument extends Document {
   tags?: string[];
   author: User;
   activity?: Activity;
-  comments?: Array<object>;
+  comments?: Array<Comment>;
   draft: boolean;
   publishedAt: Date;
   updatedAt: Date;
