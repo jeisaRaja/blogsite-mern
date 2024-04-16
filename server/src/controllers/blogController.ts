@@ -129,26 +129,36 @@ const validateCommentSchema = ajv.compile({
   type: "object",
   properties: {
     blog_id: { type: "string" },
-    blog_author: { type: "string" },
     comment: { type: "string" },
     commented_by: { type: "string" },
     isReply: { type: "boolean" },
     parent: { type: "string" }
   },
-  required: ["blog_id", "blog_author", "comment", "commented_by"],
+  required: ["blog_id", "comment", "commented_by"],
   additionalProperties: false // Ensures no additional properties are allowed
 })
 
 
 export const addComment = async (req: Request, res: Response) => {
   if (!validateCommentSchema(req.body)) {
-    return res.json(400).json({ error: 'invalid input' })
+    return res.status(400).json({ error: 'invalid input' })
   }
 
   try {
-    const comment = await Comment.create(req.body)
+    const blog = await Blog.findOne({ blog_id: req.body.blog_id })
+    if (!blog) {
+      return res.status(400).json({ error: 'no blog found' })
+    }
+    const newComment = {
+      blog_id: blog?.id,
+      comment: req.body.comment,
+      commented_by: req.body.commented_by,
+      blog_author: blog?.author
+    }
+    const comment = await Comment.create(newComment)
     return res.status(200).json({ success: 'comment added', comment })
   } catch (e) {
+    console.log(e)
     return res.status(500).json({ error: 'something went wrong' })
   }
 }

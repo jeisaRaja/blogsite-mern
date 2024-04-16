@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getLike, getOneBlog, getRecentBlogs, toggleLikeBlog } from "../controllers/blogController";
+import { addComment, getLike, getOneBlog, getRecentBlogs, toggleLikeBlog } from "../controllers/blogController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 const blogsRouter = Router()
@@ -14,7 +14,7 @@ blogsRouter.route('/like/id/:blogId')
   .get(isAuthenticated, getLike)
   .post(isAuthenticated, toggleLikeBlog)
 
-blogsRouter.route('/comment/id/:blogId')
-  .post(isAuthenticated)
+blogsRouter.route('/id/:blogId/comment')
+  .post(isAuthenticated, addComment)
 
 export default blogsRouter
