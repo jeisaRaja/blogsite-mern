@@ -4,6 +4,7 @@ import User from "../Schema/User";
 import Notification, { INotification } from "../Schema/Notification";
 import Ajv from "ajv";
 import Comment from "../Schema/Comment";
+import { Types } from 'mongoose';
 
 const ajv = new Ajv()
 // Get All Published Blog
@@ -26,6 +27,12 @@ export const getOneBlog = async (req: Request, res: Response) => {
     const blog = await Blog.findOne({ blog_id: blogId }).populate({
       path: 'author',
       select: 'personal_info.username personal_info.profile_img'
+    }).populate({
+      path: 'comments',
+      populate: {
+        path: 'commented_by',
+        select: 'personal_info.username personal_info.profile_img'
+      }
     })
     if (!blog) {
       return res.status(400).json("blog not found")
@@ -156,6 +163,12 @@ export const addComment = async (req: Request, res: Response) => {
       blog_author: blog?.author
     }
     const comment = await Comment.create(newComment)
+    blog.comments?.push(comment._id as Types.ObjectId)
+    if (blog.activity) {
+      blog.activity.total_comments += 1
+    }
+    await blog.save()
+
     return res.status(200).json({ success: 'comment added', comment })
   } catch (e) {
     console.log(e)

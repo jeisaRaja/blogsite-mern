@@ -121,7 +121,11 @@ const BlogPage = () => {
         )}
       </div>
       {commentModal && (
-        <CommentModal status={commentModal} toggleShow={setCommentModal} />
+        <CommentModal
+          status={commentModal}
+          toggleShow={setCommentModal}
+          comments={blog?.comments}
+        />
       )}
     </>
   );
