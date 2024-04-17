@@ -17,7 +17,8 @@ export interface User {
   personal_info: personal_info
 }
 
-export interface BlogDocument extends Document {
+export interface BlogDocument {
+  _id: string,
   blog_id: string;
   title: string;
   banner?: string | null;
