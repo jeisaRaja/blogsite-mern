@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CommentDiv from "./Comment";
-import { useUserContext } from "../../contexts/userContext";
 import CommentInput from "./CommentInput";
 import { Comment } from "../../common/interfaces";
 
@@ -18,21 +17,26 @@ const CommentModal = ({
   );
 
   function handleAddComment(newComment: Comment) {
-    setComments([...comments, newComment]);
-    console.log("handle add comment");
+    if (newComment.isReply) {
+      const parentCommentIndex = comments.findIndex(
+        (c) => c._id === newComment.parent
+      );
+      if (parentCommentIndex !== -1) {
+        const updatedComments = [...comments];
+        updatedComments[parentCommentIndex].children.push(newComment);
+        setComments(updatedComments);
+      }
+    } else {
+      setComments([...comments, newComment]);
+    }
   }
 
-  const { user } = useUserContext();
-  useEffect(()=>{
-    console.log(comments)
-  }, [comments])
+  useEffect(() => {
+    console.log(comments);
+  }, [comments]);
   return (
     <div className="w-[70%] md:w-[30%] bg-white shadow-2xl fixed right-0 top-0 min-h-screen overflow-y-auto h-full pb-[40px]">
-      {user !== undefined ? (
-        <CommentInput onAddComment={handleAddComment} />
-      ) : (
-        ""
-      )}
+      <CommentInput onAddComment={handleAddComment} />
       {comments &&
         comments
           .reverse()
@@ -40,7 +44,7 @@ const CommentModal = ({
             <CommentDiv
               comment={comment}
               key={comment._id}
-              commentKey = {comment._id}
+              commentKey={comment._id}
               onAddComment={handleAddComment}
               isChild={false}
             />

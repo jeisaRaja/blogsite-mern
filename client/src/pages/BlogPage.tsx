@@ -5,6 +5,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
 import { useUserContext } from "../contexts/userContext";
 import CommentModal from "../components/Blogpost/CommentModal";
+import { Toaster } from "react-hot-toast";
 
 const BlogPage = () => {
   const { blogId } = useParams();
@@ -43,6 +44,7 @@ const BlogPage = () => {
   return (
     <>
       <Navbar />
+      <Toaster/>
       <div
         className={
           "mx-auto p-8 md:p-12  " +

@@ -12,12 +12,16 @@ const CommentDiv = ({
   comment: Comment;
   onAddComment: (newComment: Comment) => void;
   commentKey: string;
-  isChild: boolean
+  isChild: boolean;
 }) => {
   const [input, setInput] = useState(false);
   const { user } = useUserContext();
   return (
-    <div className="flex flex-col gap-1 text-sm py-2 px-5 w-full border-t-2 border-solid border-gray-300">
+    <div
+      className={`flex flex-col gap-1 text-sm py-2 px-5 w-full border-y-2 border-solid border-gray-200 ${
+        isChild ? "px-0 pl-5  ml-5 border-y-0" : ""
+      } `}
+    >
       <div className="flex items-center gap-2">
         <img
           src={comment.commented_by.personal_info.profile_img}

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import axios from "axios";
 import { Comment } from "../../common/interfaces";
+import toast from "react-hot-toast";
 
 const CommentInput = ({
   onAddComment,
@@ -19,9 +20,13 @@ const CommentInput = ({
 
   async function postComment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    console.log(user);
+    if (user === undefined) {
+      toast.error("You need to signin first!");
+      return;
+    }
     let isReply: boolean;
     parentComment !== undefined ? (isReply = true) : (isReply = false);
-    console.log(parentComment, isReply);
     const data = {
       blog_id: blogId,
       comment: commentText,
@@ -34,10 +39,7 @@ const CommentInput = ({
       data,
       { withCredentials: true }
     );
-    console.log(res);
-    if (!isReply) {
-      onAddComment(res.data.comment);
-    }
+    onAddComment(res.data.comment);
   }
 
   return (
