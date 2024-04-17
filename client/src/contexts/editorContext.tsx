@@ -30,7 +30,7 @@ export interface BlogState {
   setTags: Dispatch<SetStateAction<string[]>>;
 }
 
-export const EditorContext = createContext<BlogState | undefined>(undefined);
+const EditorContext = createContext<BlogState | undefined>(undefined);
 
 export function useEditorContext(): BlogState {
   const context = useContext(EditorContext);

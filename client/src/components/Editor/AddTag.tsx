@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useEditorContext } from "../../contexts/editorContext";
 import toast from "react-hot-toast";
 
@@ -40,6 +40,9 @@ const AddTag = () => {
       tags: prevBlog.tags.filter((theTag) => tag != theTag),
     }));
   }
+
+  useEffect(() => {
+  }, [tags]);
 
   return (
     <div className="w-full flex flex-col gap-2 mb-5">

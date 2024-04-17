@@ -23,6 +23,15 @@
     @apply list-decimal;
   }
 
+  #blogContent {
+    @apply font-serif text-xl
+  }
+
+  #blogContent img {
+    @apply mt-[50px] mb-[50px] mx-auto min-w-[50%]
+  }
+
+
   #textEditorContainer img {
     @apply mt-5 mb-1 w-full;
   }
@@ -79,6 +88,6 @@ p a {
   pointer-events: auto;
 }
 
-*{
+* {
   box-sizing: border-box;
 }

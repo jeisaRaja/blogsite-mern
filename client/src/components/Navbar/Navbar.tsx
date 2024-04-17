@@ -16,7 +16,9 @@ const Navbar = () => {
             <div className="flex w-full items-center">
               <ul className="mr-auto">
                 <div className="py-1 cursor-pointer">
-                  <Link to='/' className="text-2xl font-semibold py-2">Sharify</Link>
+                  <Link to="/" className="text-2xl font-semibold py-2">
+                    Sharify
+                  </Link>
                 </div>
               </ul>
               <ul className="ml-auto">
@@ -44,20 +46,23 @@ const Navbar = () => {
               </ul>
             </div>
           ) : (
-            <ul className="flex gap-3 ml-auto">
-              <li>
+            <div className="w-full max-w-[1200px] mx-auto flex items-center">
+              <div className="py-1 cursor-pointer">
+                <Link to="/" className="text-2xl font-semibold py-2">
+                  Sharify
+                </Link>
+              </div>
+              <div className="flex ml-auto w-[200px] justify-end gap-2">
                 <a href="/signin">
                   <Button dark={true} type={undefined}>
                     Sign In
                   </Button>
                 </a>
-              </li>
-              <li>
                 <a href="/signup">
                   <Button>Sign Up</Button>
                 </a>
-              </li>
-            </ul>
+              </div>
+            </div>
           )}
         </nav>
       </header>

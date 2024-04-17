@@ -2,6 +2,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
 import { useEffect, useState } from "react";
 import { BlogDocument } from "../common/interfaces";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [blogs, setBlogs] = useState<BlogDocument[]>([]);
@@ -36,10 +37,10 @@ const Home = () => {
                         alt=""
                         className="w-5 h-5 inline-block mr-2"
                       />
-                      {blog.author.personal_info.email}
+                      {blog.author.personal_info.username}
                     </p>
                   </div>
-                  <h3 className="font-bold">{blog.title}</h3>
+                  <Link to={`blog/${blog.blog_id}`}><h3 className="font-bold hover:opacity-60">{blog.title}</h3></Link>
                   <p className="mb-7">{blog.des}</p>
                   {blog.tags !== undefined ? (
                     <div className="flex gap-2 mb-3">

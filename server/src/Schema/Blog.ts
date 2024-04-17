@@ -16,7 +16,7 @@ interface BlogDocument extends Document {
     tags?: string[];
     author: Types.ObjectId;
     activity?: Activity;
-    comments?: Schema.Types.ObjectId[];
+    comments?: Types.ObjectId[];
     draft: boolean;
     publishedAt: Date;
     updatedAt: Date;
@@ -51,7 +51,7 @@ const blogSchema = new mongoose.Schema({
         // required: true
     },
     author: {
-        type: Schema.Types.ObjectId,
+        type: Types.ObjectId,
         required: true,
         ref: 'users'
     },
@@ -74,7 +74,7 @@ const blogSchema = new mongoose.Schema({
         },
     },
     comments: {
-        type: [Schema.Types.ObjectId],
+        type: [Types.ObjectId],
         ref: 'comments'
     },
     draft: {

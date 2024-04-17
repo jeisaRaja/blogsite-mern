@@ -48,15 +48,18 @@ export const Tiptap = () => {
   useEffect(() => {
     console.log("content", blog.content);
     blogContentRef.current = blog.content;
+    console.log("hey");
   }, [blog.content]);
 
   useEffect(() => {
-    if (!isContentInitialized && editor !== null && isLoadQueryParamPresent) {
-      editor?.commands.setContent(blogContentRef.current);
-      setIsContentInitialized(true); // Mark as initialized
-    } else if (blog.content === "" && !isLoadQueryParamPresent) {
-      editor?.commands.setContent(blogContentRef.current);
-    }
+    // console.log(isContentInitialized, isLoadQueryParamPresent)
+    // if (!isContentInitialized && editor !== null && isLoadQueryParamPresent) {
+    //   editor?.commands.setContent(blogContentRef.current);
+    //   setIsContentInitialized(true); // Mark as initialized
+    // } else if (blog.content === "" && !isLoadQueryParamPresent) {
+    //   editor?.commands.setContent(blogContentRef.current);
+    // }
+    editor?.commands.setContent(blogContentRef.current);
   }, [
     editor,
     isLoadQueryParamPresent,

@@ -2,17 +2,20 @@ import AnimationWrapper from "../../common/animation";
 import defaultBanner from "../../../images/blog banner.png";
 import axios, { AxiosError } from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import React, { ChangeEvent, useEffect, useRef } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useUserContext } from "../../contexts/userContext";
 import { dummyBlogPost, useEditorContext } from "../../contexts/editorContext";
 import { Tiptap } from "./TipTap";
 import AddTag from "./AddTag";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const BlogEditor = () => {
+  const params = useParams();
+  const blog_id: string | undefined = params.blogId;
   const bannerRef = useRef<HTMLImageElement>(null);
   const auth = useUserContext();
   const { blog, setBlog, setTags } = useEditorContext();
+  const [fetched, setFetched] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -113,6 +116,17 @@ const BlogEditor = () => {
       }
       toast.loading("Publishing...");
       const method = blog._id === "" ? "POST" : "PUT";
+      // const cleanBlog = {
+      //   _id: blog._id,
+      //   blog_id: blog.blog_id,
+      //   title: blog.title,
+      //   banner: blog.banner,
+      //   des: blog.des,
+      //   content: blog.content,
+      //   tags: blog.tags,
+      //   draft: blog.draft,
+      //   author: blog.author,
+      // };
       const res = await axios({
         withCredentials: true,
         data: blog,
@@ -166,7 +180,23 @@ const BlogEditor = () => {
   }, [isLoadQueryParamPresent, setBlog, setTags]);
 
   useEffect(() => {
-    console.log(blog.content);
+    console.log("check");
+    const getBlogEditorData = async () => {
+      if (blog_id !== undefined) {
+        const api_route = `${
+          import.meta.env.VITE_API_ROUTE
+        }/editor/id/${blog_id}`;
+        const res = await axios.get(api_route, { withCredentials: true });
+        console.log(res);
+        if (res.data.blog.author !== auth.user?.user_id) {
+          navigate("/");
+        }
+        setBlog(res.data.blog);
+        setTags(res.data.blog.tags);
+      } else {
+        console.error("Blog ID is undefined");
+      }
+    };
     const { ...data } = auth.user;
     setBlog((prevBlog) => ({ ...prevBlog, author: data }));
     if (blog.banner !== "") {
@@ -178,6 +208,10 @@ const BlogEditor = () => {
         bannerRef.current.src = defaultBanner;
       }
     }
+    if (!fetched) {
+      getBlogEditorData();
+      setFetched(true);
+    }
   }, [
     blog.banner,
     auth.user,
@@ -185,8 +219,10 @@ const BlogEditor = () => {
     blog.title,
     blog.content,
     blog.tags,
+    blog_id,
+    fetched,
     setTags,
-    isLoadQueryParamPresent,
+    navigate,
   ]);
 
   return (

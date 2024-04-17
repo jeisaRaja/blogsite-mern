@@ -1,6 +1,17 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
-const notificationSchema = new mongoose.Schema({
+export interface INotification {
+    type: 'like' | 'comment' | 'reply';
+    blog: Types.ObjectId;
+    notification_for: Types.ObjectId;
+    user: Types.ObjectId;
+    comment?: Types.ObjectId;
+    reply?: Types.ObjectId;
+    replied_on_comment?: Types.ObjectId;
+    seen?: boolean;
+}
+
+const notificationSchema = new mongoose.Schema<INotification>({
     type: {
         type: String,
         enum: ["like", "comment", "reply"],
@@ -28,8 +39,8 @@ const notificationSchema = new mongoose.Schema({
     reply: {
         type: Schema.Types.ObjectId,
         ref: 'comments'
-    }, 
-    replied_on_comment:{
+    },
+    replied_on_comment: {
         type: Schema.Types.ObjectId,
         ref: 'comments'
     },
@@ -38,9 +49,8 @@ const notificationSchema = new mongoose.Schema({
         default: false
     }
 },
-{
-    timestamps: true
-}
-)
+    {
+        timestamps: true
+    });
 
-export default mongoose.model("notification", notificationSchema)
+export default mongoose.model<INotification>("Notification", notificationSchema);
