@@ -39,6 +39,7 @@ const CommentInput = ({
       data,
       { withCredentials: true }
     );
+    setCommentText("");
     onAddComment(res.data.comment);
   }
 
@@ -53,6 +54,7 @@ const CommentInput = ({
         onChange={(e) => {
           setCommentText(e.target.value);
         }}
+        value={commentText}
       />
       <button
         className="bg-emerald-500 rounded-md py-2 px-5 ml-auto shadow-md text-white"

@@ -24,7 +24,7 @@ const CommentModal = ({
       if (parentCommentIndex !== -1) {
         const updatedComments = [...comments];
         updatedComments[parentCommentIndex].children.push(newComment);
-        setComments(updatedComments);
+        setComments(updatedComments.reverse());
       }
     } else {
       setComments([...comments, newComment]);

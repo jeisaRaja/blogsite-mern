@@ -18,8 +18,8 @@ const CommentDiv = ({
   const { user } = useUserContext();
   return (
     <div
-      className={`flex flex-col gap-1 text-sm py-2 px-5 w-full border-y-2 border-solid border-gray-200 ${
-        isChild ? "px-0 pl-5  ml-5 border-y-0" : ""
+      className={`flex flex-col gap-1 text-sm py-2 px-5 w-full border-solid border-gray-200 ${
+        isChild ? "px-0 pl-5  ml-5" : "border-t-2"
       } `}
     >
       <div className="flex items-center gap-2">
