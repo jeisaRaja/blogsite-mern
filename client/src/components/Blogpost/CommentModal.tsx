@@ -35,7 +35,7 @@ const CommentModal = ({
     console.log(comments);
   }, [comments]);
   return (
-    <div className="w-[70%] md:w-[30%] bg-white shadow-2xl fixed right-0 top-0 min-h-screen overflow-y-auto h-full pb-[40px]">
+    <div className="w-[70%] md:w-[50%] lg:w-[30%] bg-white shadow-2xl fixed right-0 top-0 min-h-screen overflow-y-auto h-full pb-[40px]">
       <CommentInput onAddComment={handleAddComment} />
       {comments &&
         comments
@@ -51,7 +51,7 @@ const CommentModal = ({
           ))}
       <div
         onClick={() => toggleShow(!status)}
-        className="w-[70%] md:w-[30%] cursor-pointer h-10 bg-slate-50 text-center flex flex-col justify-center fixed bottom-0 right-0"
+        className="w-[70%] md:w-[50%] lg:w-[30%] cursor-pointer h-10 bg-slate-50 text-center flex flex-col justify-center fixed bottom-0 right-0"
       >
         <i className="fi fi-rs-circle-xmark text-red-400"></i>
       </div>
