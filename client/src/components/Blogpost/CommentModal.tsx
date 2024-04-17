@@ -40,7 +40,9 @@ const CommentModal = ({
             <CommentDiv
               comment={comment}
               key={comment._id}
+              commentKey = {comment._id}
               onAddComment={handleAddComment}
+              isChild={false}
             />
           ))}
       <div

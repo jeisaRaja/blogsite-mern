@@ -7,8 +7,10 @@ import { Comment } from "../../common/interfaces";
 
 const CommentInput = ({
   onAddComment,
+  parentComment,
 }: {
   onAddComment: (newComment: Comment) => void;
+  parentComment?: string | undefined;
 }) => {
   const params = useParams();
   const blogId = params.blogId;
@@ -17,10 +19,15 @@ const CommentInput = ({
 
   async function postComment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    let isReply: boolean;
+    parentComment !== undefined ? (isReply = true) : (isReply = false);
+    console.log(parentComment, isReply);
     const data = {
       blog_id: blogId,
       comment: commentText,
       commented_by: user?.user_id,
+      isReply,
+      parent: parentComment,
     };
     const res = await axios.post(
       `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}/comment`,
@@ -28,7 +35,9 @@ const CommentInput = ({
       { withCredentials: true }
     );
     console.log(res);
-    onAddComment(res.data.comment);
+    if (!isReply) {
+      onAddComment(res.data.comment);
+    }
   }
 
   return (

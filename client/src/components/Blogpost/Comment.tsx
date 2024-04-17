@@ -6,9 +6,13 @@ import { Comment } from "../../common/interfaces";
 const CommentDiv = ({
   comment,
   onAddComment,
+  commentKey,
+  isChild,
 }: {
   comment: Comment;
   onAddComment: (newComment: Comment) => void;
+  commentKey: string;
+  isChild: boolean
 }) => {
   const [input, setInput] = useState(false);
   const { user } = useUserContext();
@@ -31,7 +35,7 @@ const CommentDiv = ({
       <div className="flex gap-5 mt-2 relative items-center">
         <i className="fi fi-rr-social-network text-lg"></i>
         <i className="fi fi-rr-beacon text-lg"></i>
-        {user !== undefined ? (
+        {!isChild && user !== undefined ? (
           <>
             <button
               className="right-0 absolute"
@@ -44,7 +48,20 @@ const CommentDiv = ({
           ""
         )}
       </div>
-      {input ? <CommentInput onAddComment={onAddComment} /> : ""}
+      {comment.children.map((comment) => (
+        <CommentDiv
+          comment={comment}
+          key={comment._id}
+          commentKey={comment._id}
+          onAddComment={onAddComment}
+          isChild={true}
+        />
+      ))}
+      {!comment.isReply && input ? (
+        <CommentInput onAddComment={onAddComment} parentComment={commentKey} />
+      ) : (
+        ""
+      )}
     </div>
   );
 };
