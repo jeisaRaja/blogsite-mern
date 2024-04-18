@@ -205,3 +205,9 @@ export const addComment = async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'something went wrong' })
   }
 }
+
+export const getBlogsByAuthor = async (req: Request, res: Response) => {
+  const { user_id } = req.params
+  const blogs = await Blog.find({ author: user_id, draft: false })
+  return res.status(200).json({blogs})
+}
