@@ -180,7 +180,6 @@ const BlogEditor = () => {
   }, [isLoadQueryParamPresent, setBlog, setTags]);
 
   useEffect(() => {
-    console.log("check");
     const getBlogEditorData = async () => {
       if (blog_id !== undefined) {
         const api_route = `${

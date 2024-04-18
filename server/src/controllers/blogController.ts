@@ -29,15 +29,36 @@ export const getOneBlog = async (req: Request, res: Response) => {
       select: 'personal_info.username personal_info.profile_img'
     }).populate({
       path: 'comments',
-      populate: {
+      match: { isReply: false },
+      populate: [{
         path: 'commented_by',
         select: 'personal_info.username personal_info.profile_img'
-      }
+      }, {
+        path: 'children',
+        populate: {
+          path: 'commented_by',
+          select: 'personal_info.username personal_info.profile_img'
+        }
+      }],
     })
+
     if (!blog) {
       return res.status(400).json("blog not found")
     }
-    blog.activity!.total_reads += 1
+
+    interface VisitedBlogInfo {
+      timestamp: Date;
+      visitCount: number;
+    }
+
+    let visitedBlogs: { [key: string]: VisitedBlogInfo } = req.cookies['visited_blogs'] || {};
+    if (!visitedBlogs[blog.id]) {
+      visitedBlogs[blog.id] = { timestamp: new Date(), visitCount: 0 };
+      blog.activity!.total_reads += 1
+    }
+    visitedBlogs[blog.id].visitCount++
+    res.cookie('visited_blogs', visitedBlogs)
+
     await blog.save()
     if (!req.session.user) {
       return res.json({ blog, like: false })
@@ -53,6 +74,7 @@ export const getOneBlog = async (req: Request, res: Response) => {
     }
     return res.json({ blog, like: true })
   } catch (e) {
+    console.log(e)
     return res.status(400).json("blog not found")
   }
 }
@@ -142,12 +164,21 @@ const validateCommentSchema = ajv.compile({
     parent: { type: "string" }
   },
   required: ["blog_id", "comment", "commented_by"],
-  additionalProperties: false // Ensures no additional properties are allowed
+  additionalProperties: false
 })
+
+interface CommentRequestBody {
+  blog_id: string;
+  comment: string;
+  commented_by: string;
+  isReply?: boolean;
+  parent?: string;
+}
 
 
 export const addComment = async (req: Request, res: Response) => {
-  if (!validateCommentSchema(req.body)) {
+  const requestBody = req.body as CommentRequestBody;
+  if (!validateCommentSchema(requestBody)) {
     return res.status(400).json({ error: 'invalid input' })
   }
 
@@ -156,16 +187,27 @@ export const addComment = async (req: Request, res: Response) => {
     if (!blog) {
       return res.status(400).json({ error: 'no blog found' })
     }
+
     const newComment = {
       blog_id: blog?.id,
       comment: req.body.comment,
       commented_by: req.body.commented_by,
-      blog_author: blog?.author
+      blog_author: blog?.author,
+      isReply: Boolean(requestBody.isReply),
+      parent: Boolean(requestBody.isReply) ? requestBody.parent : undefined
     }
+
     const comment = await Comment.create(newComment)
     blog.comments?.push(comment._id as Types.ObjectId)
     if (blog.activity) {
       blog.activity.total_comments += 1
+    }
+    if (comment.isReply) {
+      await Comment.findByIdAndUpdate(
+        comment.parent,
+        { $push: { children: comment._id } },
+        { new: true }
+      );
     }
     await blog.save()
     const populatedComment = await comment.populate({
@@ -177,4 +219,10 @@ export const addComment = async (req: Request, res: Response) => {
     console.log(e)
     return res.status(500).json({ error: 'something went wrong' })
   }
+}
+
+export const getBlogsByAuthor = async (req: Request, res: Response) => {
+  const { user_id } = req.params
+  const blogs = await Blog.find({ author: user_id, draft: false })
+  return res.status(200).json({ blogs })
 }

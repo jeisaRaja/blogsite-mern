@@ -5,6 +5,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
 import { useUserContext } from "../contexts/userContext";
 import CommentModal from "../components/Blogpost/CommentModal";
+import { Toaster } from "react-hot-toast";
 
 const BlogPage = () => {
   const { blogId } = useParams();
@@ -43,11 +44,12 @@ const BlogPage = () => {
   return (
     <>
       <Navbar />
+      <Toaster />
       <div
         className={
           "mx-auto p-8 md:p-12  " +
           (commentModal
-            ? " ml-auto mr-[30%]  w-[90%] md:w-[50%]"
+            ? " ml-auto mr-[30%] w-[90%] md:w-[50%]"
             : " w-[90%] md:w-[60%]")
         }
       >
@@ -103,6 +105,9 @@ const BlogPage = () => {
               ) : (
                 ""
               )}
+              <div className="flex items-center gap-1 ml-auto">
+                <p>{blog.activity?.total_reads} reads</p>
+              </div>
             </div>
             {blog.banner && (
               <img src={blog.banner} className="w-full mb-[50px]" alt="" />
