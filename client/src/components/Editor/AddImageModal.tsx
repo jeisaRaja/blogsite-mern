@@ -72,8 +72,21 @@ export const AddImageLink = ({ editor, setModal }: AddImageLinkProps) => {
     setlink(url);
     setModal(false);
     setInput("");
-    editor.commands.enter();
-    editor.commands.setBlockquote()
+    const cursorPos = editor.state.selection.$anchor.pos;
+    editor.commands.insertContentAt(
+      cursorPos + 1,
+      "<blockquote>write caption here</blockquote>",
+      {
+        updateSelection: true,
+        parseOptions: {
+          preserveWhitespace: "full",
+        },
+      }
+    );
+    editor.commands.setTextSelection({
+      from: cursorPos + 2,
+      to: cursorPos + 1 + 20,
+    });
   };
   return (
     <div

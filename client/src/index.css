@@ -28,7 +28,7 @@
   }
 
   #blogContent img {
-    @apply mt-[50px] mb-[50px] mx-auto min-w-[50%]
+    @apply mt-[50px] mb-[10px] mx-auto min-w-[50%]
   }
 
 
@@ -49,7 +49,7 @@
   }
 
   blockquote {
-    @apply text-sm text-gray-500 text-center my-2;
+    @apply text-sm text-gray-500 text-center my-2 mb-10;
   }
 
   p {
