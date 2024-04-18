@@ -47,7 +47,6 @@ const BlogSchema = ajv.compile({
     draft: { type: "boolean" }
   },
   required: ['author', 'title', 'banner', 'content'],
-  additionalProperties: false
 })
 
 export const saveBlog = async (req: Request, res: Response) => {
