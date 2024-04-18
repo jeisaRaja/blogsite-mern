@@ -16,6 +16,7 @@ import { isAuthenticated } from './middlewares/isAuthenticated';
 import editorRoutes from './routes/editorRoutes';
 import session = require('express-session');
 import blogsRouter from './routes/blogRoutes';
+import  cookieParser from 'cookie-parser'
 
 const fileContent = fs.readFileSync('./service_account_firebase.json', 'utf-8');
 const serviceAccountKey = JSON.parse(fileContent);
@@ -24,6 +25,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const server = express();
+server.use(cookieParser())
 server.use(express.json());
 server.use(cors({
   origin: 'http://localhost:5173',

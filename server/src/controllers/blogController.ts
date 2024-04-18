@@ -41,10 +41,24 @@ export const getOneBlog = async (req: Request, res: Response) => {
         }
       }],
     })
+
     if (!blog) {
       return res.status(400).json("blog not found")
     }
-    blog.activity!.total_reads += 1
+
+    interface VisitedBlogInfo {
+      timestamp: Date;
+      visitCount: number;
+    }
+
+    let visitedBlogs: { [key: string]: VisitedBlogInfo } = req.cookies['visited_blogs'] || {};
+    if (!visitedBlogs[blog.id]) {
+      visitedBlogs[blog.id] = { timestamp: new Date(), visitCount: 0 };
+      blog.activity!.total_reads += 1
+    }
+    visitedBlogs[blog.id].visitCount++
+    res.cookie('visited_blogs', visitedBlogs)
+
     await blog.save()
     if (!req.session.user) {
       return res.json({ blog, like: false })
@@ -60,6 +74,7 @@ export const getOneBlog = async (req: Request, res: Response) => {
     }
     return res.json({ blog, like: true })
   } catch (e) {
+    console.log(e)
     return res.status(400).json("blog not found")
   }
 }
@@ -209,5 +224,5 @@ export const addComment = async (req: Request, res: Response) => {
 export const getBlogsByAuthor = async (req: Request, res: Response) => {
   const { user_id } = req.params
   const blogs = await Blog.find({ author: user_id, draft: false })
-  return res.status(200).json({blogs})
+  return res.status(200).json({ blogs })
 }

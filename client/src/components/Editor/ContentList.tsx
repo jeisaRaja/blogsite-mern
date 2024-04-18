@@ -25,14 +25,14 @@ const ContentList = ({ type, blogs }: ContentListProps) => {
   };
 
   return (
-    <div className="w-full min-h-[100px] max-w-[900px] mx-auto px-10">
+    <div className="w-full min-h-[100px] max-w-[900px] mx-auto px-10 my-10">
       <h2 className="my-2">Your {type}</h2>
       <div className="w-full grid grid-cols-2 gap-4">
         {blogs.map((blog, i) => {
           return (
             <div
               key={i}
-              className="basis-[50%] rounded-md bg-white shadow-md border-2 border-solid border-gray-100 p-2 relative cursor-pointer box-border"
+              className="basis-[50%] rounded-md bg-white shadow-lg border-2 border-solid border-gray-200 p-2 relative cursor-pointer box-border"
             >
               <img
                 src={blog.banner}
