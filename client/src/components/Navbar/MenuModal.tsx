@@ -18,7 +18,7 @@ export default function MenuModal() {
         <i className="fi fi-rr-edit"></i>Write
       </Link>
       <Link
-        to=""
+        to="/profile"
         className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"
       >
         <i className="fi fi-rr-user"></i>Profile
