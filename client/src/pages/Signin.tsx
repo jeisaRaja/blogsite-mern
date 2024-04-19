@@ -8,6 +8,7 @@ import googleIcon from "../../images/google.png";
 import Navbar from "../components/Navbar/Navbar";
 import Button from "../components/Input/Button";
 import { useUserContext } from "../contexts/userContext";
+import { emailRegex, passwordRegex } from "../common/regex";
 
 const Signin = () => {
   const apiRoute = import.meta.env.VITE_API_ROUTE;
@@ -20,11 +21,7 @@ const Signin = () => {
     access_token: string;
   }
 
-  const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // regex for email
-  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
-
   const auth = useUserContext();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -39,7 +36,6 @@ const Signin = () => {
     if (!emailRegex.test(email)) {
       return toast.error("Please provide a valid email");
     }
-
     if (!passwordRegex.test(password)) {
       return toast.error(
         "Password should be 6 to 20 characters long with a numeric, 1 lowercase"

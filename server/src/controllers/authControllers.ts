@@ -37,13 +37,13 @@ export const signIn = async (req: Request, res: Response) => {
   let { email, password } = req.body.requestData as { email: string, password: string };
 
   const user: UserDocument | null = await User.findOne({ "personal_info.email": email });
-
   if (!user) {
     return res.status(401).json({ "error": "email or password is incorrect" });
   }
   if (user.google_auth) {
     return res.status(401).json({ "error": "Please log in using your google account" })
   }
+  const pw  = bcrypt.hashSync(password, 10)
   const isPasswordCorrect: boolean = bcrypt.compareSync(password, user.personal_info.password);
   if (!isPasswordCorrect) {
     return res.status(401).json({ "error": "email or password is incorrect" })

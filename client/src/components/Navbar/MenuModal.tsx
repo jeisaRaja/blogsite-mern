@@ -10,7 +10,7 @@ export default function MenuModal() {
   }
 
   return (
-    <ul className="bg-white flex flex-col absolute right-[3rem] drop-shadow-sm rounded-md border-gray-100 border-solid border-2 z-10">
+    <ul className="bg-white flex flex-col absolute right-[3rem] shadow-lg rounded-md border-gray-200 border-solid border-2 z-10">
       <Link
         to="/editor"
         className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"
@@ -18,7 +18,7 @@ export default function MenuModal() {
         <i className="fi fi-rr-edit"></i>Write
       </Link>
       <Link
-        to=""
+        to="/profile"
         className="cursor-pointer flex items-center gap-3 hover:bg-gray-100 p-4 w-[200px]"
       >
         <i className="fi fi-rr-user"></i>Profile

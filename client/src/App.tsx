@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import { EditorContextProvider } from "./contexts/editorContext";
 import BlogPage from "./pages/BlogPage";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -68,6 +69,14 @@ function AppComponent() {
           element={
             <RequireAuth>
               <Dashboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Profile />
             </RequireAuth>
           }
         />

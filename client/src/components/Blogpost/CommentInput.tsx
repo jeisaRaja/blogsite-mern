@@ -57,7 +57,7 @@ const CommentInput = ({
         value={commentText}
       />
       <button
-        className="bg-emerald-500 rounded-md py-2 px-5 ml-auto shadow-md text-white"
+        className="bg-neutral-700 hover:bg-neutral-800 rounded-md py-2 px-5 ml-auto shadow-md text-white"
         type="submit"
       >
         Submit

@@ -8,11 +8,11 @@ import googleIcon from "../../images/google.png";
 import Navbar from "../components/Navbar/Navbar";
 import Button from "../components/Input/Button";
 import { useUserContext } from "../contexts/userContext";
+import {emailRegex, passwordRegex} from "../common/regex"
 
 const Signup = () => {
   const apiRoute = import.meta.env.VITE_API_ROUTE;
-  const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // regex for email
-  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
 
   const auth = useUserContext();
 

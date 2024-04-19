@@ -1,10 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import axios from "axios";
-import React, {
-  createContext,
-  useContext,
-  FC,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, FC, ReactNode } from "react";
 
 export interface UserFromServer {
   user_id: string;
@@ -18,11 +14,11 @@ interface UserState {
   user: UserFromServer | undefined;
   login: (user: UserFromServer) => void;
   logout: () => void;
+  getUserSessionData: () => void;
 }
 
 const UserContext = createContext<UserState | undefined>(undefined);
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useUserContext = (): UserState => {
   const context = useContext(UserContext);
   if (!context) {
@@ -51,19 +47,33 @@ export const UserContextProvider: FC<UserContextProviderProps> = ({
           withCredentials: true,
         }
       );
-      console.log(response)
+      console.log(response);
       setUser(undefined);
-
     } catch (error) {
       console.error("Error during logout:", error);
     }
-
   };
+
+  async function getUserSessionData() {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_ROUTE}/session`,
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.status === 200) {
+      setUser(response.data);
+    }
+  }
+  if (!user) {
+    getUserSessionData();
+  }
 
   const value: UserState = {
     user,
     login,
     logout,
+    getUserSessionData,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
