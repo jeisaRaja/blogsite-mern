@@ -79,6 +79,7 @@ const Signup = () => {
       .post(apiRoute, { requestData })
       .then((res) => {
         auth.login(res.data);
+        console.log(res)
       })
       .catch((e) => {
         console.log(e);

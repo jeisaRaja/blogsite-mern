@@ -41,6 +41,23 @@ const BlogPage = () => {
     getBlogData();
   }, [blogId]);
 
+  useEffect(()=>{
+    const handleEsc = (e)=>{
+        if(e.key === 'Escape'){
+          if(commentModal){
+            console.log('how many')
+            setCommentModal(false)
+          }
+        }
+      }
+    if(document){
+      document.addEventListener('keydown', handleEsc)
+    }
+    return ()=>{
+      document.removeEventListener('keydown', handleEsc)
+    }
+  }, [commentModal, document])
+
   return (
     <>
       <Navbar />
