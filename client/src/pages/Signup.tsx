@@ -76,10 +76,10 @@ const Signup = () => {
     requestData: SignUpData
   ) => {
     axios
-      .post(apiRoute, { requestData })
+      .post(apiRoute, { requestData }, {withCredentials: true})
       .then((res) => {
         auth.login(res.data);
-        console.log(res)
+        console.log(res.data)
       })
       .catch((e) => {
         console.log(e);

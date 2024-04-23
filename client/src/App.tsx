@@ -13,6 +13,7 @@ import BlogPage from "./pages/BlogPage";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 
+
 function App() {
   return (
     <UserContextProvider>

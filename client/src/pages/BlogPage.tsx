@@ -42,7 +42,7 @@ const BlogPage = () => {
   }, [blogId]);
 
   useEffect(()=>{
-    const handleEsc = (e)=>{
+    const handleEsc = (e:KeyboardEvent)=>{
         if(e.key === 'Escape'){
           if(commentModal){
             console.log('how many')
