@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useUserContext } from "../../contexts/userContext";
 import CommentInput from "./CommentInput";
 import { Comment } from "../../common/interfaces";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const CommentDiv = ({
   comment,
@@ -16,11 +18,19 @@ const CommentDiv = ({
 }) => {
   const [input, setInput] = useState(false);
   const { user } = useUserContext();
+  const { blogId } = useParams();
+
+  const handleDeleteComment = async () => {
+    console.log("blogid is ", blogId)
+    const res = await axios.delete(
+      `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}/comment/${comment._id}`, {withCredentials: true}
+    );
+    console.log(res);
+  };
   return (
     <div
-      className={`flex flex-col gap-1 text-sm py-2 px-5 w-full border-solid border-gray-200 ${
-        isChild ? "px-0 pl-5  ml-5" : "border-t-2"
-      } `}
+      className={`flex flex-col gap-1 text-sm py-2 px-5 w-full border-solid border-gray-200 ${isChild ? "px-0 pl-5  ml-5" : "border-t-2"
+        } `}
     >
       <div className="flex items-center gap-2">
         <img
@@ -39,6 +49,11 @@ const CommentDiv = ({
       <div className="flex gap-5 mt-2 relative items-center">
         <i className="fi fi-rr-social-network text-lg"></i>
         <i className="fi fi-rr-beacon text-lg"></i>
+        {user && user.user_id == comment.commented_by._id ? (
+          <button onClick={() => handleDeleteComment()}>Delete</button>
+        ) : (
+          ""
+        )}
         {!isChild && user !== undefined ? (
           <>
             <button

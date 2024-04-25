@@ -21,7 +21,7 @@ const BlogPage = () => {
   const toggleLike = async () => {
     const api_route = `${
       import.meta.env.VITE_API_ROUTE
-    }/blogs/like/id/${blogId}`;
+    }/blogs/id/${blogId}/like`;
     await axios.post(api_route, {}, { withCredentials: true });
     setLike(!like);
     setLikeCount((prevCount) => (like ? prevCount - 1 : prevCount + 1));
