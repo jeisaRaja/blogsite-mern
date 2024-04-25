@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { BlogDocument } from "../common/interfaces";
 import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
@@ -18,6 +18,7 @@ const BlogPage = () => {
   const toggleCommentModal = () => {
     setCommentModal(!commentModal);
   };
+  const navigate = useNavigate();
   const toggleLike = async () => {
     const api_route = `${
       import.meta.env.VITE_API_ROUTE
@@ -32,31 +33,37 @@ const BlogPage = () => {
   useEffect(() => {
     const api_uri = `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}`;
     async function getBlogData() {
-      const res = await axios.get(api_uri, { withCredentials: true });
-      setBlog(res.data.blog);
-      setLike(res.data.like);
-      setLikeCount(res.data.blog.activity?.total_likes || 0);
-      console.log(res);
+      try {
+        const res = await axios.get(api_uri, { withCredentials: true });
+        if (res.status === 200) {
+          setBlog(res.data.blog);
+          setLike(res.data.like);
+          setLikeCount(res.data.blog.activity?.total_likes || 0);
+        }
+      } catch (e) {
+        console.log("should be redirected");
+        navigate("/");
+      }
     }
     getBlogData();
-  }, [blogId]);
+  }, [blogId, navigate]);
 
-  useEffect(()=>{
-    const handleEsc = (e:KeyboardEvent)=>{
-        if(e.key === 'Escape'){
-          if(commentModal){
-            console.log('how many')
-            setCommentModal(false)
-          }
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (commentModal) {
+          console.log("how many");
+          setCommentModal(false);
         }
       }
-    if(document){
-      document.addEventListener('keydown', handleEsc)
+    };
+    if (document) {
+      document.addEventListener("keydown", handleEsc);
     }
-    return ()=>{
-      document.removeEventListener('keydown', handleEsc)
-    }
-  }, [commentModal, document])
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [commentModal, document]);
 
   return (
     <>

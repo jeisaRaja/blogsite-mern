@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Link, Navigate } from "react-router-dom";
 import AnimationWrapper from "../common/animation";
@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar/Navbar";
 import Button from "../components/Input/Button";
 import { useUserContext } from "../contexts/userContext";
 import { emailRegex, passwordRegex } from "../common/regex";
+import { useAppState } from "../contexts/State";
 
 const Signin = () => {
   const apiRoute = import.meta.env.VITE_API_ROUTE;
@@ -21,12 +22,14 @@ const Signin = () => {
     access_token: string;
   }
 
-  const auth = useUserContext();
+  const { state, dispatch } = useAppState();
+
+  //const auth = useUserContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (
-    e: FormEvent
+    e: FormEvent,
   ) => {
     e.preventDefault();
     if (!email.length) {
@@ -38,7 +41,7 @@ const Signin = () => {
     }
     if (!passwordRegex.test(password)) {
       return toast.error(
-        "Password should be 6 to 20 characters long with a numeric, 1 lowercase"
+        "Password should be 6 to 20 characters long with a numeric, 1 lowercase",
       );
     }
     const signinData = { email, password } as SignInData;
@@ -64,21 +67,24 @@ const Signin = () => {
 
   const sendAuthenticationRequest = (
     apiRoute: string,
-    requestData: SignInData
+    requestData: SignInData,
   ) => {
-    console.log(apiRoute);
     axios
       .post(apiRoute, { requestData }, { withCredentials: true })
       .then((res) => {
-        auth.login(res.data);
+        //auth.login(res.data);
+        dispatch({ type: "LOGIN", payload: res.data });
       })
       .catch((e) => {
-        console.log(e);
         toast.error(e.response.data.error);
       });
   };
 
-  return auth.user !== undefined ? (
+  useEffect(()=>{
+    console.log(state.user)
+  }, [state.user])
+
+  return state.user !== null ? (
     <Navigate to="/" />
   ) : (
     <>

@@ -27,7 +27,7 @@ export const getRecentBlogs = async (req: Request, res: Response) => {
 export const getOneBlog = async (req: Request, res: Response) => {
   try {
     const { blogId } = req.params;
-    const blog = await Blog.findOne({ blog_id: blogId })
+    const blog = await Blog.findOne({ blog_id: blogId})
       .populate({
         path: "author",
         select: "personal_info.username personal_info.profile_img",
@@ -51,9 +51,11 @@ export const getOneBlog = async (req: Request, res: Response) => {
       });
 
     if (!blog) {
-      return res.status(400).json("blog not found");
+      return res.status(404).json("blog not found");
     }
-
+    if(blog.draft && !blog.author._id.equals(req.session.user?._id)){
+      return res.status(404).json("blog not found");
+    }
     interface VisitedBlogInfo {
       timestamp: Date;
       visitCount: number;
@@ -260,9 +262,11 @@ export const deleteComment = async (req: Request, res: Response) => {
   }
   if (blog.activity) {
     blog.activity.total_comments -= 1;
-    const commentIndex = blog.comments?.findIndex(comment => comment._id.equals(commentId))
-    blog.comments?.slice(commentIndex, 1)
-    await blog.save()
+    const commentIndex = blog.comments?.findIndex((comment) =>
+      comment._id.equals(commentId),
+    );
+    blog.comments?.slice(commentIndex, 1);
+    await blog.save();
   }
   await Comment.deleteOne({ _id: commentId });
   return res.status(200).send({ blog, comment });

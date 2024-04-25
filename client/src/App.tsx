@@ -12,7 +12,7 @@ import { EditorContextProvider } from "./contexts/editorContext";
 import BlogPage from "./pages/BlogPage";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
-
+import { useAppState } from "./contexts/State";
 
 function App() {
   return (
@@ -25,23 +25,25 @@ function App() {
 }
 
 function AppComponent() {
-  const auth = useUserContext();
+  //const auth = useUserContext();
+  const { state, dispatch } = useAppState();
   useEffect(() => {
     async function getUserSessionData() {
       const response = await axios.get(
         `${import.meta.env.VITE_API_ROUTE}/session`,
         {
           withCredentials: true,
-        }
+        },
       );
       if (response.status === 200) {
-        auth.login(response.data);
+        //auth.login(response.data);
+        dispatch({ type: "LOGIN", payload: response.data });
       }
     }
-    if (!auth.user) {
+    if (!state.user) {
       getUserSessionData();
     }
-  }, [auth]);
+  }, [dispatch, state.user]);
 
   return (
     <Router>
