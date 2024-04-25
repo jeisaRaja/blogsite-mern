@@ -251,9 +251,19 @@ export const getBlogsByAuthor = async (req: Request, res: Response) => {
 export const deleteComment = async (req: Request, res: Response) => {
   const { blogId, commentId } = req.params;
   const blog = await Blog.findOne({ blog_id: blogId });
-  const comment = await Comment.findById(commentId);
-  if (comment?.commented_by?.equals(req.session.user?._id)){
-    await Comment.deleteOne({_id: commentId})
+  if (!blog) {
+    return res.status(400).json({ error: "request invalid" });
   }
-    return res.status(200).send({ blog, comment });
+  const comment = await Comment.findById(commentId);
+  if (!comment?.commented_by?.equals(req.session.user?._id)) {
+    return res.status(400).json({ error: "request invalid" });
+  }
+  if (blog.activity) {
+    blog.activity.total_comments -= 1;
+    const commentIndex = blog.comments?.findIndex(comment => comment._id.equals(commentId))
+    blog.comments?.slice(commentIndex, 1)
+    await blog.save()
+  }
+  await Comment.deleteOne({ _id: commentId });
+  return res.status(200).send({ blog, comment });
 };
