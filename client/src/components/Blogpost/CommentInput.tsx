@@ -21,7 +21,7 @@ const CommentInput = ({
   async function postComment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(user);
-    if (user === undefined) {
+    if (user === null) {
       toast.error("You need to signin first!");
       return;
     }

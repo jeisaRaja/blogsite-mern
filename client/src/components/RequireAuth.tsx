@@ -29,7 +29,7 @@ export const RequireAuth = ({ children }: RequireAuthProps) => {
       }
     }
 
-    if (user === undefined) {
+    if (user === null) {
       getUserSessionData();
     } else {
       setLoading(false);
@@ -40,5 +40,5 @@ export const RequireAuth = ({ children }: RequireAuthProps) => {
     return <h1>Loading...</h1>;
   }
 
-  return user !== undefined ? children : <Navigate to="/signin" />;
+  return user !== null? children : <Navigate to="/signin" />;
 };
