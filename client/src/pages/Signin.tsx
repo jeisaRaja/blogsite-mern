@@ -7,9 +7,8 @@ import { authWithGoogle } from "../common/firebase";
 import googleIcon from "../../images/google.png";
 import Navbar from "../components/Navbar/Navbar";
 import Button from "../components/Input/Button";
-import { useUserContext } from "../contexts/userContext";
 import { emailRegex, passwordRegex } from "../common/regex";
-import { useAppState } from "../contexts/State";
+import { useAppContext } from "../contexts/useAppContext";
 
 const Signin = () => {
   const apiRoute = import.meta.env.VITE_API_ROUTE;
@@ -22,7 +21,7 @@ const Signin = () => {
     access_token: string;
   }
 
-  const { state, dispatch } = useAppState();
+  const {user, login} = useAppContext()
 
   //const auth = useUserContext();
   const [email, setEmail] = useState("");
@@ -73,7 +72,7 @@ const Signin = () => {
       .post(apiRoute, { requestData }, { withCredentials: true })
       .then((res) => {
         //auth.login(res.data);
-        dispatch({ type: "LOGIN", payload: res.data });
+        login(res.data)
       })
       .catch((e) => {
         toast.error(e.response.data.error);
@@ -81,10 +80,10 @@ const Signin = () => {
   };
 
   useEffect(()=>{
-    console.log(state.user)
-  }, [state.user])
+    console.log(user)
+  }, [user])
 
-  return state.user !== null ? (
+  return user !== null ? (
     <Navigate to="/" />
   ) : (
     <>

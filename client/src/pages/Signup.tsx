@@ -7,14 +7,13 @@ import { authWithGoogle } from "../common/firebase";
 import googleIcon from "../../images/google.png";
 import Navbar from "../components/Navbar/Navbar";
 import Button from "../components/Input/Button";
-import { useUserContext } from "../contexts/userContext";
 import {emailRegex, passwordRegex} from "../common/regex"
+import { useAppContext } from "../contexts/useAppContext";
 
 const Signup = () => {
   const apiRoute = import.meta.env.VITE_API_ROUTE;
 
-
-  const auth = useUserContext();
+  const {user, login} = useAppContext()
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,7 +77,7 @@ const Signup = () => {
     axios
       .post(apiRoute, { requestData }, {withCredentials: true})
       .then((res) => {
-        auth.login(res.data);
+        login(res.data);
         console.log(res.data)
       })
       .catch((e) => {
@@ -90,19 +89,19 @@ const Signup = () => {
     e.preventDefault();
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const user = (await authWithGoogle()) as any;
-      if (user) {
+      const usergoogle = (await authWithGoogle()) as any;
+      if (usergoogle) {
         const requestData: ExtendedSignUpData = {
-          access_token: user.accessToken,
+          access_token: usergoogle.accessToken,
         };
         sendAuthenticationRequest(apiRoute + "/google-auth", requestData);
-        console.log(user);
+        console.log(usergoogle);
       }
     } catch {
       toast.error("There is trouble with google");
     }
   };
-  return auth.user !== undefined ? (
+  return user !== null? (
     <Navigate to="/editor" />
   ) : (
     <>

@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import { useUserContext } from "../../contexts/userContext";
+import { useAppContext } from "../../contexts/useAppContext";
 
 export default function MenuModal() {
-  const auth = useUserContext();
-  const username = auth.user?.username;
+  const {user,logout} = useAppContext()
+  const username = user?.username;
 
   async function logOutUser() {
-    auth.logout();
+    logout();
   }
 
   return (

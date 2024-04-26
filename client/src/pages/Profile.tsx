@@ -1,13 +1,13 @@
 import { FormEvent, useEffect, useState } from "react";
 import Navbar from "../components/Navbar/Navbar";
-import { useUserContext } from "../contexts/userContext";
 import toast, { Toaster } from "react-hot-toast";
 import { emailRegex } from "../common/regex";
 import axios from "axios";
 import Button from "../components/Input/Button";
+import { useAppContext } from "../contexts/useAppContext";
 
 const Profile = () => {
-  const { user, getUserSessionData } = useUserContext();
+  const { user, getUserSessionData} = useAppContext();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [fullname, setFullname] = useState("");
@@ -29,13 +29,12 @@ const Profile = () => {
     };
     const res = await axios.put(
       `${import.meta.env.VITE_API_ROUTE}/user`,
-      {data},
-      { withCredentials: true }
+      { data },
+      { withCredentials: true },
     );
     if (res.status === 200) {
-      console.log(res)
-      setToggleEdit(false)
-      // window.location.reload()
+      console.log(res);
+      setToggleEdit(false);
       getUserSessionData()
       return toast.success("Update success");
     }
@@ -48,12 +47,13 @@ const Profile = () => {
       setEmail(user.email);
       setFullname(user.fullname);
     }
+    console.log(user);
   }, [user, toggleEdit]);
 
   return (
     <>
       <Navbar />
-      <Toaster/>
+      <Toaster />
       <div className="w-full max-w-full mx-auto flex flex-col items-center justify-center gap-4">
         <form
           className="w-[70%] sm:w-[60%] md:w-[50%] lg:w-[40%] flex flex-col items-center gap-4 min-h-[350px]"
@@ -97,7 +97,7 @@ const Profile = () => {
             <Button
               type="submit"
               dark={true}
-              // className="w-full px-4 py-2 rouned-sm bg-green-300 hover:bg-green-400"
+            // className="w-full px-4 py-2 rouned-sm bg-green-300 hover:bg-green-400"
             >
               Save
             </Button>
@@ -105,7 +105,7 @@ const Profile = () => {
           <Button
             type="button"
             // className="border px-4 py-2 rouned-sm bg-gray-100 hover:bg-gray-200 w-full"
-            onclick={()=>setToggleEdit(!toggleEdit)}
+            onclick={() => setToggleEdit(!toggleEdit)}
           >
             {toggleEdit ? "Cancel" : "Edit Profile"}
           </Button>

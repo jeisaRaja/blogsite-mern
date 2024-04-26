@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useUserContext } from "../../contexts/userContext";
 import CommentInput from "./CommentInput";
 import { Comment } from "../../common/interfaces";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useAppContext } from "../../contexts/useAppContext";
 
 const CommentDiv = ({
   comment,
@@ -17,7 +17,7 @@ const CommentDiv = ({
   isChild: boolean;
 }) => {
   const [input, setInput] = useState(false);
-  const { user } = useUserContext();
+  const { user } = useAppContext();
   const { blogId } = useParams();
 
   const handleDeleteComment = async () => {

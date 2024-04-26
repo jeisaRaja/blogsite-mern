@@ -1,10 +1,10 @@
 import TextareaAutosize from "react-textarea-autosize";
-import { useUserContext } from "../../contexts/userContext";
 import { useParams } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import axios from "axios";
 import { Comment } from "../../common/interfaces";
 import toast from "react-hot-toast";
+import { useAppContext } from "../../contexts/useAppContext";
 
 const CommentInput = ({
   onAddComment,
@@ -15,7 +15,7 @@ const CommentInput = ({
 }) => {
   const params = useParams();
   const blogId = params.blogId;
-  const { user } = useUserContext();
+  const { user } = useAppContext();
   const [commentText, setCommentText] = useState("");
 
   async function postComment(e: FormEvent<HTMLFormElement>) {
@@ -37,7 +37,7 @@ const CommentInput = ({
     const res = await axios.post(
       `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}/comment`,
       data,
-      { withCredentials: true }
+      { withCredentials: true },
     );
     setCommentText("");
     onAddComment(res.data.comment);

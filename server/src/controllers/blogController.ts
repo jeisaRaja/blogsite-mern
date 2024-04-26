@@ -27,7 +27,7 @@ export const getRecentBlogs = async (req: Request, res: Response) => {
 export const getOneBlog = async (req: Request, res: Response) => {
   try {
     const { blogId } = req.params;
-    const blog = await Blog.findOne({ blog_id: blogId})
+    const blog = await Blog.findOne({ blog_id: blogId })
       .populate({
         path: "author",
         select: "personal_info.username personal_info.profile_img",
@@ -53,7 +53,7 @@ export const getOneBlog = async (req: Request, res: Response) => {
     if (!blog) {
       return res.status(404).json("blog not found");
     }
-    if(blog.draft && !blog.author._id.equals(req.session.user?._id)){
+    if (blog.draft && !blog.author._id.equals(req.session.user?._id)) {
       return res.status(404).json("blog not found");
     }
     interface VisitedBlogInfo {
@@ -72,11 +72,11 @@ export const getOneBlog = async (req: Request, res: Response) => {
 
     await blog.save();
     if (!req.session.user) {
-      return res.json({ blog, like: false });
+      return res.json({ blog, like: false, track: visitedBlogs });
     }
     const user = await User.findById(req.session.user._id);
     if (!user) {
-      return res.json({ blog, like: false });
+      return res.json({ blog, like: false, track: visitedBlogs });
     }
     const likeStatus = await Notification.findOne({
       type: "like",
@@ -84,9 +84,9 @@ export const getOneBlog = async (req: Request, res: Response) => {
       user: user._id,
     });
     if (!likeStatus) {
-      return res.json({ blog, like: false });
+      return res.json({ blog, like: false, track: visitedBlogs });
     }
-    return res.json({ blog, like: true });
+    return res.json({ blog, like: true, track: visitedBlogs });
   } catch (e) {
     console.log(e);
     return res.status(400).json("blog not found");

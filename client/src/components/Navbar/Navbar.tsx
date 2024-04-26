@@ -2,20 +2,20 @@ import { useEffect, useState } from "react";
 import Button from "../Input/Button";
 import MenuModal from "./MenuModal";
 import { Link } from "react-router-dom";
-import { useAppState } from "../../contexts/State";
+import { useAppContext } from "../../contexts/useAppContext";
 const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
-  const {state} = useAppState()
+  const {user} = useAppContext()
 
   useEffect(()=>{
-    console.log(state)
-  }, [state])
+    console.log(user)
+  }, [user])
   return (
     <>
       <header className="w-full max-w-[1200px] mx-auto px-12 h-[100px] flex items-center justify-between py-5">
         <div className=""></div>
         <nav className="flex flex-row w-full">
-          {state.user ? (
+          {user ? (
             <div className="flex w-full items-center">
               <ul className="mr-auto">
                 <div className="py-1 cursor-pointer">
@@ -27,7 +27,7 @@ const Navbar = () => {
               <ul className="ml-auto">
                 <li>
                   <img
-                    src={state.user.profile_img}
+                    src={user.profile_img}
                     alt=""
                     className="w-12 h-12 rounded-full"
                     onClick={() => {

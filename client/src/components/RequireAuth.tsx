@@ -1,13 +1,13 @@
-import { useUserContext } from "../contexts/userContext";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { useAppContext } from "../contexts/useAppContext";
 
 interface RequireAuthProps {
   children: React.ReactNode;
 }
 export const RequireAuth = ({ children }: RequireAuthProps) => {
-  const auth = useUserContext();
+  const {user,login} = useAppContext()
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const RequireAuth = ({ children }: RequireAuthProps) => {
           }
         );
         if (response.status === 200) {
-          auth.login(response.data);
+          login(response.data);
         }
       } catch (error) {
         console.error("Error fetching user session data:", error);
@@ -29,16 +29,16 @@ export const RequireAuth = ({ children }: RequireAuthProps) => {
       }
     }
 
-    if (auth.user === undefined) {
+    if (user === undefined) {
       getUserSessionData();
     } else {
       setLoading(false);
     }
-  }, [auth]);
+  }, [user,login]);
 
   if (loading) {
     return <h1>Loading...</h1>;
   }
 
-  return auth.user !== undefined ? children : <Navigate to="/signin" />;
+  return user !== undefined ? children : <Navigate to="/signin" />;
 };

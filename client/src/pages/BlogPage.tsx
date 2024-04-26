@@ -3,17 +3,18 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { BlogDocument } from "../common/interfaces";
 import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
-import { useUserContext } from "../contexts/userContext";
 import CommentModal from "../components/Blogpost/CommentModal";
 import { Toaster } from "react-hot-toast";
+import { useAppContext } from "../contexts/useAppContext";
 
 const BlogPage = () => {
   const { blogId } = useParams();
   const [blog, setBlog] = useState<null | BlogDocument>(null);
   const [like, setLike] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(0);
-  const { user } = useUserContext();
   const [commentModal, setCommentModal] = useState(false);
+
+  const { user } = useAppContext();
 
   const toggleCommentModal = () => {
     setCommentModal(!commentModal);
@@ -36,9 +37,11 @@ const BlogPage = () => {
       try {
         const res = await axios.get(api_uri, { withCredentials: true });
         if (res.status === 200) {
+          console.log(res)
           setBlog(res.data.blog);
           setLike(res.data.like);
           setLikeCount(res.data.blog.activity?.total_likes || 0);
+          localStorage.setItem("visited_blogs",JSON.stringify(res.data.track))
         }
       } catch (e) {
         console.log("should be redirected");
@@ -63,7 +66,7 @@ const BlogPage = () => {
     return () => {
       document.removeEventListener("keydown", handleEsc);
     };
-  }, [commentModal, document]);
+  }, [commentModal]);
 
   return (
     <>

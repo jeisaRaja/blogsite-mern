@@ -3,30 +3,27 @@ import Home from "./pages/Home";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import EditorPage from "./pages/Editor";
-import { UserContextProvider, useUserContext } from "./contexts/userContext";
 import { RequireAuth } from "./components/RequireAuth";
 import { useEffect } from "react";
 import axios from "axios";
 import Dashboard from "./pages/Dashboard";
-import { EditorContextProvider } from "./contexts/editorContext";
 import BlogPage from "./pages/BlogPage";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
-import { useAppState } from "./contexts/State";
+import { AppContextProvider } from "./contexts/State";
+import { useAppContext } from "./contexts/useAppContext";
 
 function App() {
-  return (
-    <UserContextProvider>
-      <EditorContextProvider>
+  return (  
+    <AppContextProvider>
         <AppComponent />
-      </EditorContextProvider>
-    </UserContextProvider>
+    </AppContextProvider>
   );
 }
 
 function AppComponent() {
   //const auth = useUserContext();
-  const { state, dispatch } = useAppState();
+  const {user, login} = useAppContext()
   useEffect(() => {
     async function getUserSessionData() {
       const response = await axios.get(
@@ -37,13 +34,13 @@ function AppComponent() {
       );
       if (response.status === 200) {
         //auth.login(response.data);
-        dispatch({ type: "LOGIN", payload: response.data });
+        login(response.data)
       }
     }
-    if (!state.user) {
+    if (!user) {
       getUserSessionData();
     }
-  }, [dispatch, state.user]);
+  }, [user, login]);
 
   return (
     <Router>

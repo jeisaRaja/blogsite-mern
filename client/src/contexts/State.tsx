@@ -1,6 +1,6 @@
-import React, { FC, ReactNode, createContext, useContext, useReducer } from "react";
+import { FC, ReactNode, createContext, useReducer } from "react";
 import { Action } from "./Action";
-import { User } from "../common/interfaces";
+import axios from "axios";
 
 export type UserState = {
   user_id: string;
@@ -9,12 +9,6 @@ export type UserState = {
   fullname: string;
   email: string;
 };
-
-export type AuthFunction = {
-  logout: () => void;
-  getUserSessionData: () => void;
-};
-
 
 export type Blog = {
   blog_id: string;
@@ -36,13 +30,6 @@ export type EditorState = Blog & {
   loadDraftClicked: boolean;
 };
 
-type AppState = {
-  user: UserState | null;
-  blog: BlogState | null;
-  editor: EditorState | null;
-  login: (user: UserState) => void
-};
-
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case "LOGIN":
@@ -60,19 +47,32 @@ function reducer(state: AppState, action: Action): AppState {
   }
 }
 
+type AppState = {
+  user: UserState | null;
+  blog: BlogState | null;
+  editor: EditorState | null;
+  login: (user: UserState) => void;
+  logout: () => void;
+  updateBlog: (blog: BlogState) => void;
+  getUserSessionData: () => void;
+};
+
 const initialState: AppState = {
   user: null,
   blog: null,
   editor: null,
-  login: () =>{return}
-}
+  login: () => {},
+  logout: () => {},
+  updateBlog: () => {},
+  getUserSessionData: () => {},
+};
 
 const useAppState = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   return { state, dispatch };
 };
 
-const AppContext = createContext<AppState>(initialState)
+export const AppContext = createContext<AppState>(initialState);
 
 interface AppContextProviderProps {
   children: ReactNode;
@@ -81,11 +81,49 @@ interface AppContextProviderProps {
 export const AppContextProvider: FC<AppContextProviderProps> = ({
   children,
 }: AppContextProviderProps) => {
-  const { state, dispatch } = useAppState()
+  const { state, dispatch } = useAppState();
 
   const login = (user: UserState) => {
-    dispatch({ type: "LOGIN", payload: user })
+    dispatch({ type: "LOGIN", payload: user });
+  };
+
+  const logout = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_ROUTE}/signout`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+      console.log(response);
+      dispatch({type:"LOGOUT"})
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  const updateBlog = (blog: BlogState) => {
+    dispatch({ type: "UPDATE_BLOG", payload: blog });
+  };
+
+  async function getUserSessionData() {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_ROUTE}/session`,
+      {
+        withCredentials: true,
+      },
+    );
+    if (response.status === 200) {
+      login(response.data);
+    }
   }
 
-  return <AppContext.Provider value={{ ...state, login }}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider
+      value={{ ...state, login, updateBlog, getUserSessionData, logout }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 };
