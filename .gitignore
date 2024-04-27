@@ -6,4 +6,5 @@ server/node_modules
 server/service_account_firebase.json
 server/request.rest
 
-/Ref
+Ref
+data

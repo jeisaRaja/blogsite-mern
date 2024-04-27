@@ -5,16 +5,15 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import MenuBar from "./MenuBar";
 import AddLinkBox from "./AddLinkModal";
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Typography from "@tiptap/extension-typography";
 import Youtube from "@tiptap/extension-youtube";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useEditorContext } from "../../contexts/editorContext";
 import { useLocation } from "react-router-dom";
+import { BlogPost } from "../../contexts/editorContext";
 
-export const Tiptap = () => {
+export const Tiptap = ({ blog, setBlog }: { blog: BlogPost, setBlog: Dispatch<SetStateAction<BlogPost>> }) => {
   const [linkModal, setLinkModal] = useState(false);
-  const { blog, setBlog } = useEditorContext();
   const [isContentInitialized, setIsContentInitialized] = useState(false);
   const blogContentRef = useRef(blog.content);
   const location = useLocation();
@@ -50,19 +49,13 @@ export const Tiptap = () => {
   }, [blog.content]);
 
   useEffect(() => {
-    if (!isContentInitialized && editor !== null && isLoadQueryParamPresent) {
-      editor?.commands.setContent(blogContentRef.current);
+    if (!isContentInitialized && editor !== null && blog.content !== "") {
+      editor?.commands.setContent(blog.content);
       setIsContentInitialized(true);
-      console.log(isContentInitialized, isLoadQueryParamPresent);
     } else if (blog.content === "" && !isLoadQueryParamPresent) {
       editor?.commands.setContent(blogContentRef.current);
     }
-  }, [
-    editor,
-    isLoadQueryParamPresent,
-    blog.content,
-    isContentInitialized,
-  ]);
+  }, [editor, isLoadQueryParamPresent, blog.content, isContentInitialized]);
 
   return (
     <div className="w-full">

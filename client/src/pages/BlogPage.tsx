@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { BlogDocument } from "../common/interfaces";
 import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
-import { useUserContext } from "../contexts/userContext";
 import CommentModal from "../components/Blogpost/CommentModal";
 import { Toaster } from "react-hot-toast";
+import { useAppContext } from "../contexts/useAppContext";
 
 const BlogPage = () => {
   const { blogId } = useParams();
   const [blog, setBlog] = useState<null | BlogDocument>(null);
   const [like, setLike] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(0);
-  const { user } = useUserContext();
   const [commentModal, setCommentModal] = useState(false);
+
+  const { user } = useAppContext();
 
   const toggleCommentModal = () => {
     setCommentModal(!commentModal);
   };
+  const navigate = useNavigate();
   const toggleLike = async () => {
     const api_route = `${
       import.meta.env.VITE_API_ROUTE
-    }/blogs/like/id/${blogId}`;
+    }/blogs/id/${blogId}/like`;
     await axios.post(api_route, {}, { withCredentials: true });
     setLike(!like);
     setLikeCount((prevCount) => (like ? prevCount - 1 : prevCount + 1));
@@ -32,14 +34,39 @@ const BlogPage = () => {
   useEffect(() => {
     const api_uri = `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}`;
     async function getBlogData() {
-      const res = await axios.get(api_uri, { withCredentials: true });
-      setBlog(res.data.blog);
-      setLike(res.data.like);
-      setLikeCount(res.data.blog.activity?.total_likes || 0);
-      console.log(res);
+      try {
+        const res = await axios.get(api_uri, { withCredentials: true });
+        if (res.status === 200) {
+          console.log(res)
+          setBlog(res.data.blog);
+          setLike(res.data.like);
+          setLikeCount(res.data.blog.activity?.total_likes || 0);
+          localStorage.setItem("visited_blogs",JSON.stringify(res.data.track))
+        }
+      } catch (e) {
+        console.log("should be redirected");
+        navigate("/");
+      }
     }
     getBlogData();
-  }, [blogId]);
+  }, [blogId, navigate]);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (commentModal) {
+          console.log("how many");
+          setCommentModal(false);
+        }
+      }
+    };
+    if (document) {
+      document.addEventListener("keydown", handleEsc);
+    }
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [commentModal]);
 
   return (
     <>

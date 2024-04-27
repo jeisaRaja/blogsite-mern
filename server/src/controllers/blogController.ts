@@ -4,18 +4,21 @@ import User from "../Schema/User";
 import Notification, { INotification } from "../Schema/Notification";
 import Ajv from "ajv";
 import Comment from "../Schema/Comment";
-import { Types } from 'mongoose';
+import { Types } from "mongoose";
 
-const ajv = new Ajv()
+const ajv = new Ajv();
 // Get All Published Blog
 export const getRecentBlogs = async (req: Request, res: Response) => {
   const publishedBlogs = await Blog.find({ draft: false }).populate({
     path: "author",
-    select: "personal_info.username personal_info.email personal_info.profile_img"
-  })
-  const recentBlogs = publishedBlogs.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
-  res.status(200).json(recentBlogs)
-}
+    select:
+      "personal_info.username personal_info.email personal_info.profile_img",
+  });
+  const recentBlogs = publishedBlogs.sort(
+    (a, b) => b.publishedAt.getTime() - a.publishedAt.getTime(),
+  );
+  res.status(200).json(recentBlogs);
+};
 
 // /all/blogs
 // /category/blogs
@@ -23,123 +26,142 @@ export const getRecentBlogs = async (req: Request, res: Response) => {
 // Get One Blog Details
 export const getOneBlog = async (req: Request, res: Response) => {
   try {
-    const { blogId } = req.params
-    const blog = await Blog.findOne({ blog_id: blogId }).populate({
-      path: 'author',
-      select: 'personal_info.username personal_info.profile_img'
-    }).populate({
-      path: 'comments',
-      match: { isReply: false },
-      populate: [{
-        path: 'commented_by',
-        select: 'personal_info.username personal_info.profile_img'
-      }, {
-        path: 'children',
-        populate: {
-          path: 'commented_by',
-          select: 'personal_info.username personal_info.profile_img'
-        }
-      }],
-    })
+    const { blogId } = req.params;
+    const blog = await Blog.findOne({ blog_id: blogId })
+      .populate({
+        path: "author",
+        select: "personal_info.username personal_info.profile_img",
+      })
+      .populate({
+        path: "comments",
+        match: { isReply: false },
+        populate: [
+          {
+            path: "commented_by",
+            select: "personal_info.username personal_info.profile_img",
+          },
+          {
+            path: "children",
+            populate: {
+              path: "commented_by",
+              select: "personal_info.username personal_info.profile_img",
+            },
+          },
+        ],
+      });
 
     if (!blog) {
-      return res.status(400).json("blog not found")
+      return res.status(404).json("blog not found");
     }
-
+    if (blog.draft && !blog.author._id.equals(req.session.user?._id)) {
+      return res.status(404).json("blog not found");
+    }
     interface VisitedBlogInfo {
       timestamp: Date;
       visitCount: number;
     }
 
-    let visitedBlogs: { [key: string]: VisitedBlogInfo } = req.cookies['visited_blogs'] || {};
+    let visitedBlogs: { [key: string]: VisitedBlogInfo } =
+      req.cookies["visited_blogs"] || {};
     if (!visitedBlogs[blog.id]) {
       visitedBlogs[blog.id] = { timestamp: new Date(), visitCount: 0 };
-      blog.activity!.total_reads += 1
+      blog.activity!.total_reads += 1;
     }
-    visitedBlogs[blog.id].visitCount++
-    res.cookie('visited_blogs', visitedBlogs)
+    visitedBlogs[blog.id].visitCount++;
+    res.cookie("visited_blogs", visitedBlogs);
 
-    await blog.save()
+    await blog.save();
     if (!req.session.user) {
-      return res.json({ blog, like: false })
+      return res.json({ blog, like: false, track: visitedBlogs });
     }
-    const user = await User.findById(req.session.user._id)
+    const user = await User.findById(req.session.user._id);
     if (!user) {
-      return res.json({ blog, like: false })
-
+      return res.json({ blog, like: false, track: visitedBlogs });
     }
-    const likeStatus = await Notification.findOne({ type: 'like', blog: blog._id, user: user._id })
+    const likeStatus = await Notification.findOne({
+      type: "like",
+      blog: blog._id,
+      user: user._id,
+    });
     if (!likeStatus) {
-      return res.json({ blog, like: false })
+      return res.json({ blog, like: false, track: visitedBlogs });
     }
-    return res.json({ blog, like: true })
+    return res.json({ blog, like: true, track: visitedBlogs });
   } catch (e) {
-    console.log(e)
-    return res.status(400).json("blog not found")
+    console.log(e);
+    return res.status(400).json("blog not found");
   }
-}
+};
 
 export const toggleLikeBlog = async (req: Request, res: Response) => {
   try {
-    const { blogId } = req.params
-    const blog = await Blog.findOne({ blog_id: blogId })
+    const { blogId } = req.params;
+    const blog = await Blog.findOne({ blog_id: blogId });
     if (!blog) {
-      return res.status(400).json({ error: "blog not found" })
+      return res.status(400).json({ error: "blog not found" });
     }
-    const user = await User.findById(req.session.user?._id)
+    const user = await User.findById(req.session.user?._id);
     if (!user) {
-      return res.status(400).json({ error: "user invalid" })
+      return res.status(400).json({ error: "user invalid" });
     }
-    const likeStatus = await Notification.findOne({ type: 'like', blog: blog._id, user: user._id })
+    const likeStatus = await Notification.findOne({
+      type: "like",
+      blog: blog._id,
+      user: user._id,
+    });
     if (!likeStatus) {
       const notificationObj: INotification = {
-        type: 'like',
+        type: "like",
         blog: blog._id,
         user: user._id,
-        notification_for: blog.author._id
-      }
-      const notification = await Notification.create(notificationObj)
+        notification_for: blog.author._id,
+      };
+      const notification = await Notification.create(notificationObj);
       if (blog.activity && blog.activity.total_likes !== undefined) {
         blog.activity.total_likes += 1;
-        await blog.save()
+        await blog.save();
       }
-      return res.status(200).json({ success: "ok", notification })
+      return res.status(200).json({ success: "ok", notification });
     }
     await Notification.deleteOne({ _id: likeStatus._id });
     if (blog.activity && blog.activity.total_likes !== undefined) {
       blog.activity.total_likes -= 1;
-      await blog.save()
+      await blog.save();
     }
-    return res.status(200).json({ success: "ok" })
+    return res.status(200).json({ success: "ok" });
   } catch (e) {
-    const error: Error = e as Error
-    console.log(error.name)
-    return res.status(400).json({ error: error.message })
+    const error: Error = e as Error;
+    console.log(error.name);
+    return res.status(400).json({ error: error.message });
   }
-}
+};
 
 export const getLike = async (req: Request, res: Response) => {
   try {
-    const { blogId } = req.params
-    const blog = await Blog.findOne({ blog_id: blogId })
+    const { blogId } = req.params;
+    const blog = await Blog.findOne({ blog_id: blogId });
     if (!blog) {
-      return res.status(400).json({ error: "blog not found" })
+      return res.status(400).json({ error: "blog not found" });
     }
-    const user = await User.findById(req.session.user?._id)
+    const user = await User.findById(req.session.user?._id);
     if (!user) {
-      return res.status(400).json({ error: "user invalid" })
+      return res.status(400).json({ error: "user invalid" });
     }
-    const likeStatus = await Notification.findOne({ type: 'like', blog: blog._id, user: user._id })
-    let like = false
+    const likeStatus = await Notification.findOne({
+      type: "like",
+      blog: blog._id,
+      user: user._id,
+    });
+    let like = false;
     if (likeStatus) {
-      like = true
+      like = true;
     }
-    res.status(200).json({ like })
+    res.status(200).json({ like });
   } catch (e) {
-    const error: Error = e as Error
-    return res.status(400).json({ error: error.message })
+    const error: Error = e as Error;
+    return res.status(400).json({ error: error.message });
   }
-}
+};
 // Get Blogs by filter
 
 // Comment
@@ -153,7 +175,6 @@ interface Comment {
   parent?: string;
 }
 
-
 const validateCommentSchema = ajv.compile({
   type: "object",
   properties: {
@@ -161,11 +182,11 @@ const validateCommentSchema = ajv.compile({
     comment: { type: "string" },
     commented_by: { type: "string" },
     isReply: { type: "boolean" },
-    parent: { type: "string" }
+    parent: { type: "string" },
   },
   required: ["blog_id", "comment", "commented_by"],
-  additionalProperties: false
-})
+  additionalProperties: false,
+});
 
 interface CommentRequestBody {
   blog_id: string;
@@ -175,17 +196,16 @@ interface CommentRequestBody {
   parent?: string;
 }
 
-
 export const addComment = async (req: Request, res: Response) => {
   const requestBody = req.body as CommentRequestBody;
   if (!validateCommentSchema(requestBody)) {
-    return res.status(400).json({ error: 'invalid input' })
+    return res.status(400).json({ error: "invalid input" });
   }
 
   try {
-    const blog = await Blog.findOne({ blog_id: req.body.blog_id })
+    const blog = await Blog.findOne({ blog_id: req.body.blog_id });
     if (!blog) {
-      return res.status(400).json({ error: 'no blog found' })
+      return res.status(400).json({ error: "no blog found" });
     }
 
     const newComment = {
@@ -194,35 +214,60 @@ export const addComment = async (req: Request, res: Response) => {
       commented_by: req.body.commented_by,
       blog_author: blog?.author,
       isReply: Boolean(requestBody.isReply),
-      parent: Boolean(requestBody.isReply) ? requestBody.parent : undefined
-    }
+      parent: Boolean(requestBody.isReply) ? requestBody.parent : undefined,
+    };
 
-    const comment = await Comment.create(newComment)
-    blog.comments?.push(comment._id as Types.ObjectId)
+    const comment = await Comment.create(newComment);
+    blog.comments?.push(comment._id as Types.ObjectId);
     if (blog.activity) {
-      blog.activity.total_comments += 1
+      blog.activity.total_comments += 1;
     }
     if (comment.isReply) {
       await Comment.findByIdAndUpdate(
         comment.parent,
         { $push: { children: comment._id } },
-        { new: true }
+        { new: true },
       );
     }
-    await blog.save()
+    await blog.save();
     const populatedComment = await comment.populate({
-      path: 'commented_by',
-      select: "personal_info.username personal_info.email personal_info.profile_img"
-    })
-    return res.status(200).json({ success: 'comment added', comment: populatedComment })
+      path: "commented_by",
+      select:
+        "personal_info.username personal_info.email personal_info.profile_img",
+    });
+    return res
+      .status(200)
+      .json({ success: "comment added", comment: populatedComment });
   } catch (e) {
-    console.log(e)
-    return res.status(500).json({ error: 'something went wrong' })
+    console.log(e);
+    return res.status(500).json({ error: "something went wrong" });
   }
-}
+};
 
 export const getBlogsByAuthor = async (req: Request, res: Response) => {
-  const { user_id } = req.params
-  const blogs = await Blog.find({ author: user_id, draft: false })
-  return res.status(200).json({ blogs })
-}
+  const { user_id } = req.params;
+  const blogs = await Blog.find({ author: user_id, draft: false });
+  return res.status(200).json({ blogs });
+};
+
+export const deleteComment = async (req: Request, res: Response) => {
+  const { blogId, commentId } = req.params;
+  const blog = await Blog.findOne({ blog_id: blogId });
+  if (!blog) {
+    return res.status(400).json({ error: "request invalid" });
+  }
+  const comment = await Comment.findById(commentId);
+  if (!comment?.commented_by?.equals(req.session.user?._id)) {
+    return res.status(400).json({ error: "request invalid" });
+  }
+  if (blog.activity) {
+    blog.activity.total_comments -= 1;
+    const commentIndex = blog.comments?.findIndex((comment) =>
+      comment._id.equals(commentId),
+    );
+    blog.comments?.slice(commentIndex, 1);
+    await blog.save();
+  }
+  await Comment.deleteOne({ _id: commentId });
+  return res.status(200).send({ blog, comment });
+};

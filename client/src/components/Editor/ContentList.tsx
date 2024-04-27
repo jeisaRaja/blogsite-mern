@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BlogPost, useEditorContext } from "../../contexts/editorContext";
 import { Dispatch, SetStateAction } from "react";
 
@@ -10,15 +10,6 @@ interface ContentListProps {
 
 const ContentList = ({ type, blogs }: ContentListProps) => {
   const navigate = useNavigate();
-  const { blog, setBlog, setTags, setLoadDraftClicked } = useEditorContext();
-  const handleEdit = (i: number) => {
-    const draft = blogs[i];
-    setBlog(draft);
-    setTags(draft.tags);
-    setLoadDraftClicked(true);
-    navigate("/editor?load=true", { state: [blog] });
-  };
-
   const handleView = (i: number) => {
     const blog = blogs[i];
     navigate(`/blog/${blog.blog_id}`);
@@ -42,18 +33,18 @@ const ContentList = ({ type, blogs }: ContentListProps) => {
               <p className="font-bold">{blog.title}</p>
 
               <div className="flex gap-3 py-3">
-                <button
+                <Link
+                  to={`/editor/${blog.blog_id}`}
                   className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-300"
-                  onClick={() => handleEdit(i)}
                 >
                   <i className="fi fi-rr-pencil"></i>
-                </button>
-                <button
+                </Link>
+                <Link
+                  to={`/blog/${blog.blog_id}`}
                   className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-300"
-                  onClick={() => handleView(i)}
                 >
                   <i className="fi fi-rr-eye"></i>
-                </button>
+                </Link>
               </div>
             </div>
           );

@@ -12,7 +12,7 @@ const Button: React.FC<ButtonProps> = ({ children, type, dark, onclick }) => {
       onClick={onclick}
       type={type}
       className={`
-      flex justify-center border-solid border-2 py-3 px-3 rounded-md mt-4 text-sm
+      flex justify-center border-solid border-2 py-3 px-3 rounded-md mt-4 text-sm w-full shadow-sm
       ${
         dark
           ? "text-white bg-neutral-700 hover:bg-neutral-800"
