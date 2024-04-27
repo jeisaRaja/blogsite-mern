@@ -1,12 +1,10 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
-import { useEditorContext } from "../../contexts/editorContext";
+import { ChangeEvent, Dispatch, KeyboardEvent, SetStateAction, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { BlogPost } from "../../contexts/editorContext";
 
-const AddTag = () => {
+const AddTag = ({blog, setBlog}:{blog:BlogPost,setBlog:Dispatch<SetStateAction<BlogPost>>}) => {
   const [input, setInput] = useState("");
   const ref = useRef<HTMLInputElement>(null);
-  const { tags, setTags } = useEditorContext();
-  const { setBlog } = useEditorContext();
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     setInput(e.target.value);
@@ -16,8 +14,7 @@ const AddTag = () => {
     if (e.key !== "Enter") {
       return;
     }
-    if (input.trim() !== "" && !tags.includes(input)) {
-      setTags([...tags, input.trim()]);
+    if (input.trim() !== "" && !blog.tags.includes(input)) {
       setBlog((prevBlog) => ({
         ...prevBlog,
         tags: [...prevBlog.tags, input.trim()],
@@ -26,15 +23,13 @@ const AddTag = () => {
       if (ref.current) {
         ref.current.value = "";
       }
-    } else if (tags.includes(input)) {
+    } else if (blog.tags.includes(input)) {
       toast.error("Redundant tag");
       return;
     }
   }
 
   function handleRemoveTag(tag: string) {
-    const filterTag = tags.filter((theTag) => theTag !== tag);
-    setTags(filterTag);
     setBlog((prevBlog) => ({
       ...prevBlog,
       tags: prevBlog.tags.filter((theTag) => tag != theTag),
@@ -42,7 +37,7 @@ const AddTag = () => {
   }
 
   useEffect(() => {
-  }, [tags]);
+  }, [blog.tags]);
 
   return (
     <div className="w-full flex flex-col gap-2 mb-5">
@@ -55,7 +50,7 @@ const AddTag = () => {
         ref={ref}
       />
       <div className="flex w-full min-h-5 gap-2">
-        {tags.map((tag) => {
+        {blog.tags.map((tag) => {
           return (
             <div
               className="py-2 pr-6 pl-2 border border-gray-300 rounded-md relative"

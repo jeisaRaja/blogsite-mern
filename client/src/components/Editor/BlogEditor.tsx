@@ -3,30 +3,31 @@ import defaultBanner from "../../../images/blog banner.png";
 import axios, { AxiosError } from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useUserContext } from "../../contexts/userContext";
-import { dummyBlogPost, useEditorContext } from "../../contexts/editorContext";
+import { BlogPost, initialBlog } from "../../contexts/editorContext";
 import { Tiptap } from "./TipTap";
 import AddTag from "./AddTag";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useAppContext } from "../../contexts/useAppContext";
 
-const BlogEditor = () => {
+const BlogEditor = ({ blogData }: { blogData?: BlogPost }) => {
   const params = useParams();
   const blog_id: string | undefined = params.blogId;
   const bannerRef = useRef<HTMLImageElement>(null);
-  const auth = useUserContext();
-  const { blog, setBlog, setTags } = useEditorContext();
   const [fetched, setFetched] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const isLoadQueryParamPresent = queryParams.get("load") === "true";
+  const [blog, setBlog] = useState(initialBlog);
+  const [tags, setTags] = useState([]);
+  const { user } = useAppContext();
 
   function restrictEnterKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter") return e.preventDefault();
   }
 
   function handleEditorChange(
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) {
     setBlog({
       ...blog,
@@ -56,7 +57,7 @@ const BlogEditor = () => {
   };
 
   const handleBannerUpload: React.ChangeEventHandler<HTMLInputElement> = async (
-    e
+    e,
   ) => {
     if (!e.target.files) return;
     const img = e.target.files[0];
@@ -116,6 +117,7 @@ const BlogEditor = () => {
       }
       toast.loading("Publishing...");
       const method = blog._id === "" ? "POST" : "PUT";
+      console.log("setting up the ref,", blog.content);
       // const cleanBlog = {
       //   _id: blog._id,
       //   blog_id: blog.blog_id,
@@ -162,7 +164,7 @@ const BlogEditor = () => {
         {
           data: data,
           withCredentials: true,
-        }
+        },
       );
       if (res.status === 200) {
         navigate("/dashboard");
@@ -173,8 +175,15 @@ const BlogEditor = () => {
   };
 
   useEffect(() => {
+    console.log(blogData)
+    if (blogData !== undefined && blog == null) {
+      setBlog(blogData);
+    }
+  }, [blog, blogData]);
+
+  useEffect(() => {
     if (!isLoadQueryParamPresent) {
-      setBlog(dummyBlogPost);
+      setBlog(initialBlog);
       setTags([]);
     }
   }, [isLoadQueryParamPresent, setBlog, setTags]);
@@ -187,7 +196,7 @@ const BlogEditor = () => {
         }/editor/id/${blog_id}`;
         const res = await axios.get(api_route, { withCredentials: true });
         console.log(res);
-        if (res.data.blog.author !== auth.user?.user_id) {
+        if (res.data.blog.author !== user?.user_id) {
           navigate("/");
         }
         setBlog(res.data.blog);
@@ -196,8 +205,7 @@ const BlogEditor = () => {
         console.error("Blog ID is undefined");
       }
     };
-    const { ...data } = auth.user;
-    setBlog((prevBlog) => ({ ...prevBlog, author: data }));
+    setBlog((prevBlog) => ({ ...prevBlog, author: { ...user } }));
     if (blog.banner !== "") {
       if (bannerRef.current) {
         bannerRef.current.src = blog.banner;
@@ -213,7 +221,6 @@ const BlogEditor = () => {
     }
   }, [
     blog.banner,
-    auth.user,
     setBlog,
     blog.title,
     blog.content,
@@ -296,8 +303,8 @@ const BlogEditor = () => {
           className="mx-auto max-w-[900px] px-10 flex flex-col justify-center"
           id="textEditorContainer"
         >
-          <Tiptap />
-          <AddTag />
+          <Tiptap blog={blog} setBlog={setBlog} />
+          <AddTag blog={blog} setBlog={setBlog} />
           <textarea
             placeholder="Describe the blog in 1 or 2 sentences"
             className="w-full outline-none h-[80px] mb-[200px]"

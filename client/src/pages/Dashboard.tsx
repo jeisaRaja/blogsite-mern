@@ -4,13 +4,14 @@ import { BlogPost } from "../contexts/editorContext";
 import axios from "axios";
 import DraftList from "../components/Editor/ContentList";
 import { useUserContext } from "../contexts/userContext";
+import { useAppContext } from "../contexts/useAppContext";
 
 const Dashboard = () => {
   const [drafts, setDrafts] = useState<Array<BlogPost>>([]);
   const [blogs, setBlogs] = useState<Array<BlogPost>>([]);
   const [fetched, setFetched] = useState(false);
   const [fetchBlogs, setFetchBlogs] = useState(false);
-  const { user } = useUserContext();
+  const { user } = useAppContext() 
   useEffect(() => {
     const getDrafts = async () => {
       try {

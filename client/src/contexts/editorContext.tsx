@@ -30,21 +30,8 @@ export interface BlogState {
   setTags: Dispatch<SetStateAction<string[]>>;
 }
 
-const EditorContext = createContext<BlogState | undefined>(undefined);
 
-export function useEditorContext(): BlogState {
-  const context = useContext(EditorContext);
-  if (!context) {
-    throw new Error("context used outside of provider");
-  }
-  return context;
-}
-
-interface EditorContextProviderProps {
-  children: ReactNode;
-}
-
-export const dummyBlogPost: BlogPost = {
+export const initialBlog: BlogPost = {
   blog_id: "",
   _id: "",
   title: "",
@@ -56,24 +43,4 @@ export const dummyBlogPost: BlogPost = {
   draft: true,
 };
 
-export const EditorContextProvider: FC<EditorContextProviderProps> = ({
-  children,
-}) => {
-  const [tags, setTags] = useState<string[]>([]);
-  const [blog, setBlog] = useState<BlogPost>(dummyBlogPost);
-  const [loadDraftClicked, setLoadDraftClicked] = useState(false);
-  const value: BlogState = {
-    blog,
-    setBlog,
-    loadDraftClicked,
-    setLoadDraftClicked,
-    tags,
-    setTags,
-  };
 
-  return (
-    <EditorContext.Provider value={value}>{children}</EditorContext.Provider>
-  );
-};
-
-export default EditorContext;
