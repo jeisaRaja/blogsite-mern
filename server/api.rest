@@ -14,3 +14,6 @@ GET http://localhost:5000/editor/Marking-the-Web-s-35th-Birthday-An-Open-Lettere
 
 ###
 POST http://localhost:5000/blogs/comment/id/The-Power-of-Small-HabitsWc7e1
+
+###
+GET http://localhost:5000/blogs/user/65bba6ca469ff83c6394ed3d

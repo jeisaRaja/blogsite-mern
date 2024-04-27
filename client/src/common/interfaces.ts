@@ -46,6 +46,8 @@ export interface Comment {
     };
     _id: string;
   };
+  isReply: boolean;
+  parent?: string;
   commentedAt: Date;
   updatedAt: Date;
   __v: number;

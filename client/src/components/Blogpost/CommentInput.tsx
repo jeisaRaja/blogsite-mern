@@ -4,11 +4,14 @@ import { useParams } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import axios from "axios";
 import { Comment } from "../../common/interfaces";
+import toast from "react-hot-toast";
 
 const CommentInput = ({
   onAddComment,
+  parentComment,
 }: {
   onAddComment: (newComment: Comment) => void;
+  parentComment?: string | undefined;
 }) => {
   const params = useParams();
   const blogId = params.blogId;
@@ -17,17 +20,26 @@ const CommentInput = ({
 
   async function postComment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    console.log(user);
+    if (user === undefined) {
+      toast.error("You need to signin first!");
+      return;
+    }
+    let isReply: boolean;
+    parentComment !== undefined ? (isReply = true) : (isReply = false);
     const data = {
       blog_id: blogId,
       comment: commentText,
       commented_by: user?.user_id,
+      isReply,
+      parent: parentComment,
     };
     const res = await axios.post(
       `${import.meta.env.VITE_API_ROUTE}/blogs/id/${blogId}/comment`,
       data,
       { withCredentials: true }
     );
-    console.log(res);
+    setCommentText("");
     onAddComment(res.data.comment);
   }
 
@@ -42,6 +54,7 @@ const CommentInput = ({
         onChange={(e) => {
           setCommentText(e.target.value);
         }}
+        value={commentText}
       />
       <button
         className="bg-emerald-500 rounded-md py-2 px-5 ml-auto shadow-md text-white"
